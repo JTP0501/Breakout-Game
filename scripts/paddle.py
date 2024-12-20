@@ -3,6 +3,7 @@ import pyxel
 
 class Paddle:
     def __init__(self) -> None:
+        """ """
         self.w: float = 48
         self.h: float = 8
         self.x = pyxel.width // 2 - self.w // 2
@@ -15,7 +16,12 @@ class Paddle:
         self.sprite_mid_u = 0
         self.sprite_mid_v = 8
 
+    def update(self) -> None:
+        """ Move the paddle left and right based on the mouse location """
+        self.x = min(pyxel.width - self.w, max(0, pyxel.mouse_x))
+
     def draw(self) -> None:
+        """ """
         pyxel.blt(
             self.x,
             self.y,
@@ -45,3 +51,9 @@ class Paddle:
             -self.sprite_w,
             -self.sprite_w
         )
+
+    def deflect_force(self, u: float) -> float:
+        """ """
+        # Return the deflect force of the ball on the paddle
+        force: float = (u - (self.x + self.w / 2)) / 10
+        return force

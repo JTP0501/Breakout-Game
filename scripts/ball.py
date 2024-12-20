@@ -1,16 +1,21 @@
 import pyxel
+from paddle import Paddle
+from brick import Brick
+from math import ceil
 
 
 class Ball:
-    def __init__(self, x: float, y: float) -> None:
-        self.x = x
-        self.y = y
+    def __init__(self) -> None:
+        """ """
+        self.x: float = 0
+        self.y: float = 0
         self.speed_x: float = 2.0
         self.speed_y: float = -1.5 
         self.r: int = 2
         self.out_of_bounds: bool = False
 
     def draw(self) -> None:
+        """ """
         pyxel.circ(self.x, self.y, self.r, col=pyxel.COLOR_WHITE)
     
     def update(self) -> None:
@@ -26,3 +31,32 @@ class Ball:
             self.speed_x = -self.speed_x
         elif self.y - self.r >= pyxel.height:
             self.out_of_bounds = True
+    
+    def detect_collision(self, obj: Paddle | Brick, paddle: bool = False) -> bool:
+        """ """
+        # Calculate the no. of sub-steps for the contiguous collision detection
+        num_steps: int = ceil(max(abs(self.speed_x), abs(self.speed_y)))
+        if num_steps == 0:
+            return False # Ball is not moving
+        
+        # Calculate the step size for each sub-segment
+        step_size: float = 1.0 / num_steps
+
+        # Check for collisions along the sub-segments
+        for step in range(1, num_steps + 1):
+            t = step * step_size # Interpolation factor between the start and end of the sub-segment
+            sub_ball_x: float = self.x + t * self.speed_x   
+            sub_ball_y: float = self.y + t * self.speed_y
+
+            if (
+                sub_ball_x + self.r >= obj.x
+                and sub_ball_x - self.r <= obj.x + obj.w
+                and sub_ball_y + self.r >= obj.y
+                and sub_ball_y - self.r <= obj.y + obj.h
+            ):
+                # Deflect the ball
+                if paddle:
+                    self.speed_x = obj.deflect_force(self.x)
+                    self.speed_y = -self.speed_y
+                return True # Collision detected
+        return False # No collision detected
