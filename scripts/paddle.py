@@ -1,0 +1,47 @@
+import pyxel
+
+
+class Paddle:
+    def __init__(self) -> None:
+        self.w: float = 48
+        self.h: float = 8
+        self.x = pyxel.width // 2 - self.w // 2
+        self.y = pyxel.height - 50
+        self.mid_sections = 4
+        self.sprite_img = 0
+        self.sprite_w = 8
+        self.sprite_end_u = 8
+        self.sprite_end_v = 0
+        self.sprite_mid_u = 0
+        self.sprite_mid_v = 8
+
+    def draw(self) -> None:
+        pyxel.blt(
+            self.x,
+            self.y,
+            self.sprite_img,
+            self.sprite_end_u,
+            self.sprite_end_v,
+            self.sprite_w,
+            self.sprite_w
+        )
+        for i in range(0, self.mid_sections):
+            pyxel.blt(
+                self.x + self.sprite_w + (self.sprite_w * i),
+                self.y,
+                self.sprite_img,
+                self.sprite_mid_u,
+                self.sprite_mid_v,
+                self.sprite_w,
+                self.sprite_w
+            )
+
+        pyxel.blt(
+            self.x + self.sprite_w + self.sprite_w * self.mid_sections,
+            self.y,
+            self.sprite_img,
+            self.sprite_end_u,
+            self.sprite_end_v,
+            -self.sprite_w,
+            -self.sprite_w
+        )
