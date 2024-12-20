@@ -75,6 +75,12 @@ class BreakoutGame:
         if self.current_game_state == GameState.RUNNING:
             self.ball.update()
             self._check_collision()
+
+            if not self.bricks: # Level Cleared
+                self._next_stage()
+                self._reset_ball()
+                self.current_game_state = GameState.READY
+
             if self.ball.out_of_bounds:
                 self.current_game_state = GameState.DROPPED
         
@@ -108,8 +114,10 @@ class BreakoutGame:
         """ """
         pyxel.cls(0)
         self.paddle.draw()
+
         for brick in self.bricks:
             brick.draw()
+
         self.ball.draw()
         pyxel.text(10, pyxel.height - 20, str(self.current_game_state), pyxel.COLOR_WHITE, None)
 
