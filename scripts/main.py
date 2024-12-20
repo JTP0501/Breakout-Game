@@ -22,18 +22,28 @@ class BreakoutGame:
         pyxel.load("../assets/resources.pyxres")
         pyxel.mouse(True)
 
+        self.score: int
+        self.lives: int
         self.paddle = Paddle()
         self.ball = Ball()
         self._reset_ball()
 
         self.stages: list[dict[str, list[dict[str, int]]]] = self._load_stages("../assets/stages.json")
-        self.current_stage: int = 0
+        self.current_stage: int
         self.bricks: list[Brick] = []
-        self._load_stage(self.current_stage)
 
         self.current_game_state = GameState.READY
+        self._start_new_game()
         pyxel.run(self._update, self._draw)
-    
+
+    def _start_new_game(self) -> None:
+        self.lives = 3
+        self.score = 0
+        self.current_stage = 0
+        self._load_stage(self.current_stage)
+        self._reset_ball()
+        self.current_game_state = GameState.READY
+
     def _load_stages(self, file_path: str) -> list[dict[str, list[dict[str, int]]]]:
         """Load stages from JSON file."""
         with open(file_path, "r") as f:
@@ -53,8 +63,9 @@ class BreakoutGame:
         if self.current_stage < len(self.stages) - 1:
             self.current_stage += 1
             self._load_stage(self.current_stage)
+            self.current_game_state = GameState.READY
         else:
-            print("Game Over! You've completed all stages!")
+            self.current_game_state = GameState.WIN
 
     def _reset_ball(self):
         """ """
@@ -77,50 +88,62 @@ class BreakoutGame:
             self._check_collision()
 
             if not self.bricks: # Level Cleared
-                self._next_stage()
-                self._reset_ball()
-                self.current_game_state = GameState.READY
+                if self.current_stage == len(self.stages) - 1:  # Last stage cleared
+                    self.current_game_state = GameState.WIN
+                else:
+                    self._next_stage()
+                    self._reset_ball()
 
             if self.ball.out_of_bounds:
-                self.current_game_state = GameState.DROPPED
-        
+                self.lives -= 1
+                if self.lives > 0:
+                    self.current_game_state = GameState.DROPPED
+                else:
+                    self.current_game_state = GameState.GAME_OVER
+
     def _check_collision(self) -> None:
         """ """
         # Ball vs Paddle
-        collision: bool = self.ball.detect_collision(self.paddle, paddle=True)
+        collision: bool = self.ball.detect_collision(self.paddle, paddle=True)[0]
         if collision:
             pass
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))):
             b: Brick = self.bricks[i]
-            collision = self.ball.detect_collision(b)
+            collision, score = self.ball.detect_collision(b)
             if collision:
+                self.score += score
                 del self.bricks[i]
                 break
 
     def _check_input(self) -> None:
         """ """
-        if self.current_game_state == GameState.READY:
+        if self.current_game_state in {GameState.READY, GameState.DROPPED}:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_SPACE):
-                # Launch the ball and set the game running
-                self.current_game_state = GameState.RUNNING
-        if self.current_game_state == GameState.DROPPED:
-            if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_SPACE):
-                # Launch the ball and set the game running
                 self._reset_ball()
-                self.current_game_state = GameState.READY
+                self.current_game_state = GameState.RUNNING
+    
+        if self.current_game_state == GameState.GAME_OVER or self.current_game_state == GameState.WIN:
+            if pyxel.btnp(pyxel.KEY_RETURN):
+                self._start_new_game()
 
     def _draw(self) -> None:
         """ """
         pyxel.cls(0)
+        if self.current_game_state == GameState.WIN:
+            pyxel.text(10, pyxel.height - 10, "Game Over! You've completed all stages!", pyxel.COLOR_WHITE, None)
+            return
+        
         self.paddle.draw()
 
         for brick in self.bricks:
             brick.draw()
 
         self.ball.draw()
+        pyxel.text(10, pyxel.height - 30, str(self.lives), pyxel.COLOR_WHITE, None)
         pyxel.text(10, pyxel.height - 20, str(self.current_game_state), pyxel.COLOR_WHITE, None)
-
+        pyxel.text(10, pyxel.height - 10, str(self.score), pyxel.COLOR_WHITE, None)
+        
 
 BreakoutGame()
 

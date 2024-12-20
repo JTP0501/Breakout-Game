@@ -5,15 +5,6 @@
         "bricks": [
           {"x": 10, "y": 10, "brick_type": 1}
         ]
-      },
-      {
-        "id": 2,
-        "bricks": [
-          {"x": 10, "y": 10, "brick_type": 4},
-          {"x": 50, "y": 10, "brick_type": 1},
-          {"x": 90, "y": 10, "brick_type": 2},
-          {"x": 30, "y": 30, "brick_type": 3}
-        ]
       }
     ]
   }

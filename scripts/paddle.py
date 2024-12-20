@@ -15,6 +15,7 @@ class Paddle:
         self.sprite_end_v = 0
         self.sprite_mid_u = 0
         self.sprite_mid_v = 8
+        self.score = 0 # Just for pyright
 
     def update(self) -> None:
         """ Move the paddle left and right based on the mouse location """
