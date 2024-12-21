@@ -3,7 +3,22 @@
       {
         "id": 1,
         "bricks": [
-          {"x": 10, "y": 10, "brick_type": 1}
+          {"x": 10, "y": 10, "brick_type": 1},
+          {"x": 50, "y": 10, "brick_type": 1}
+        ]
+      },
+      {
+        "id": 2,
+        "bricks": [
+          {"x": 10, "y": 10, "brick_type": 1},
+          {"x": 50, "y": 10, "brick_type": 1}
+        ]
+      },
+      {
+        "id": 3,
+        "bricks": [
+          {"x": 10, "y": 10, "brick_type": 1},
+          {"x": 50, "y": 10, "brick_type": 1}
         ]
       }
     ]

@@ -37,7 +37,7 @@ BrickType: dict[int, dict[str, int]] = {
 
 class Brick:
     def __init__(self, x: float, y: float, brick_type: int) -> None:
-        """ """
+        """ Constructor for brick """
         self.x = x
         self.y = y
         self.brick_type = brick_type
@@ -46,6 +46,7 @@ class Brick:
         self.score = BrickType[brick_type]["score"]
     
     def draw(self) -> None:
+        """ Drawing method for brick """
         pyxel.blt(
             self.x,
             self.y,
@@ -57,9 +58,7 @@ class Brick:
         )
 
     def deflect_force(self, u: float) -> float:
-        """ """
+        """ Not used yet """
         # Return the deflect force of the ball on the brick
         force: float = (u - (self.x + self.w / 2)) / 10
         return force
-
-""" Temp """
