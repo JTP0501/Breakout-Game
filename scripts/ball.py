@@ -6,20 +6,39 @@ from math import ceil
 
 class Ball:
     def __init__(self) -> None:
-        """ """
+        """ Constructor for ball """
         self.x: float = 0
         self.y: float = 0
         self.speed_x: float = 2.0
         self.speed_y: float = -1.5 
         self.r: int = 2
         self.out_of_bounds: bool = False
+        self.trail: list[tuple[float, float]] = []
 
     def draw(self) -> None:
-        """ """
-        pyxel.circ(self.x, self.y, self.r, col=pyxel.COLOR_WHITE)
-    
+        """ Drawing method for ball and its shimmering trail """
+        
+        # Draw the shimmering trail
+        for i, (trail_x, trail_y) in enumerate(self.trail):
+            # Make the trail shimmer with a uniform color and fading brightness
+            brightness = max(0, 15 - i)  # Diminish brightness over time
+            color = pyxel.COLOR_YELLOW - (brightness // 2)  # Uniform shimmer color, fading
+            # Draw the trail as small dots
+            pyxel.pset(trail_x, trail_y, color)
+
+        # Draw the ball itself (round shape with a glowing effect)
+        pyxel.circ(self.x, self.y, self.r, col=pyxel.COLOR_YELLOW)  # Glowing ball
+
     def update(self) -> None:
         """ Move the ball, then check if it should bounce """
+
+        # Store the current position in the trail
+        self.trail.append((self.x, self.y))
+
+        # Limit trail length (keep only the last 10 positions)
+        if len(self.trail) > 10:
+            self.trail.pop(0)
+
         self.x += self.speed_x
         self.y += self.speed_y
 

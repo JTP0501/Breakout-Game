@@ -3,7 +3,7 @@ import pyxel
 
 class Paddle:
     def __init__(self) -> None:
-        """ """
+        """ Constructor for paddle """
         self.w: float = 48
         self.h: float = 8
         self.x = pyxel.width // 2 - self.w // 2
@@ -22,7 +22,7 @@ class Paddle:
         self.x = min(pyxel.width - self.w, max(0, pyxel.mouse_x))
 
     def draw(self) -> None:
-        """ """
+        """ Drawing method for paddle """
         pyxel.blt(
             self.x,
             self.y,
