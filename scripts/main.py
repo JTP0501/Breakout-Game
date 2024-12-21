@@ -80,7 +80,7 @@ class BreakoutGame:
         else:
             self.current_game_state = GameState.WIN
 
-# +++++++++++++++++++++++++++++++++ GAME PROPER / HELPER METHODS +++++++++++++++++++++++++++++++++
+# +++++++++++++++++++++++++++++++++ HELPER METHODS +++++++++++++++++++++++++++++++++
 
     def _start_new_game(self) -> None:
         """ Starts a new game """
