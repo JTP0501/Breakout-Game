@@ -57,7 +57,7 @@ class Paddle:
         )
 
          # draws a vertical line as the mouse x-coordinate marker
-        pyxel.blt(x=pyxel.mouse_x - self.mark_w,
+        pyxel.blt(x=pyxel.mouse_x - (5), # pointer of hand is shifted by 5
                 y=pyxel.height - self.mark_h,
                 img=self.sprite_img,
                 u=self.mark_u,
@@ -65,6 +65,3 @@ class Paddle:
                 w=self.mark_w,
                 h=self.mark_h,
                 colkey=pyxel.COLOR_DARK_BLUE)
-
-        # displays the mouse x-coordinate as text
-        #pyxel.text(5, pyxel.height - 10, f"Mouse X: {pyxel.mouse_x}", pyxel.COLOR_WHITE, None)

@@ -27,6 +27,7 @@ class BreakoutGame:
         """ Constructor """
 
         self._init_pyxel() # initializes pyxel settings
+        self.gravity: float = 0.10
         self.stats: GameStats # holds game stats
          
         self.paddle: Paddle = Paddle() # initializes a paddle
@@ -35,7 +36,7 @@ class BreakoutGame:
         self.angle_direction: float # 1 is left to right, -1 is right to left
         self.angle_cycle_speed: float # degrees per frame     
 
-        self.ball: Ball = Ball() # initializes a ball 
+        self.ball: Ball = Ball(self.gravity) # initializes a ball 
         self._reset_ball() # makes sure that ball starts at paddle 
 
         self.stages: list[dict[str, list[dict[str, int]]]] = self._load_stages("../assets/stages.json") # contains all the predefined stages
@@ -224,7 +225,7 @@ class BreakoutGame:
 
     def _draw(self) -> None:
         """ General drawing method """
-        pyxel.cls(pyxel.COLOR_BROWN)
+        pyxel.cls(pyxel.COLOR_GRAY)
 
         match self.current_game_state:
             case GameState.READY:

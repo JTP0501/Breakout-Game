@@ -6,7 +6,7 @@ from math import ceil
 
 
 class Ball:
-    def __init__(self) -> None:
+    def __init__(self, gravity: float) -> None:
         """ Constructor for ball """
         # General
         self.x: float = 0 # ball's x-position
@@ -18,7 +18,7 @@ class Ball:
         self.sprite_u: int = 0 # sprite's (u,v) position in img, start with default (u=0, v=16)
         self.sprite_v: int = 16 
         self.out_of_bounds: bool = False # tracks if sprite is still within bounds
-        self.gravity: float = 0.1
+        self.gravity: float = gravity
 
         # Trail 
         self.trail: list[tuple[float, float]] = [] # list of past positions of ball for trail
