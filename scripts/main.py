@@ -108,6 +108,7 @@ class BreakoutGame:
         angle_rad: float = radians(self.angle)
         self.ball.speed_x = cos(angle_rad) * 2.5
         self.ball.speed_y = -sin(angle_rad) * 2.5
+        self.ball.gravity = 0.007
 
         # Transition to running state
         self.current_game_state = GameState.RUNNING
@@ -229,8 +230,11 @@ class BreakoutGame:
             case GameState.READY:
                 self._draw_ready_state()
             case GameState.RUNNING:
+                # add the mouse cursor position while running
+                # make some bg elements move?
                 pass # to be added (maybe?)
             case GameState.DROPPED:
+                # some indicator that the ball dropped (visual effect only)
                 pass # to be added (maybe?)
             case GameState.GAME_OVER:
                 pyxel.text(10, pyxel.height - 10, "Game Over!", pyxel.COLOR_WHITE, None)

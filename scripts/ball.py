@@ -11,14 +11,15 @@ class Ball:
         # General
         self.x: float = 0 # ball's x-position
         self.y: float = 0 # ball's y-position
-        self.speed_x: float = 2.0 # initial x-speed of ball
-        self.speed_y: float = -1.5 # initial y-speed of ball
+        self.speed_x: float = 3.0 # initial x-speed of ball
+        self.speed_y: float = -3.5 # initial y-speed of ball
         self.r: int = 4 # ball's radius (based on the sprite)
         self.img: int = 0 # image bank of sprite
         self.sprite_u: int = 0 # sprite's (u,v) position in img, start with default (u=0, v=16)
         self.sprite_v: int = 16 
         self.out_of_bounds: bool = False # tracks if sprite is still within bounds
-        
+        self.gravity: float = 0.1
+
         # Trail 
         self.trail: list[tuple[float, float]] = [] # list of past positions of ball for trail
         self.trail_margin: float = 3 # how far the randomized particle will be at most
@@ -131,6 +132,8 @@ class Ball:
     
     def _move_ball(self) -> None:
         """ Move the ball based on its speed """
+        self.speed_y += self.gravity  # apply gravity
+        self.speed_y = min(self.speed_y, 5)  # cap the downward speed
         self.x += self.speed_x
         self.y += self.speed_y
 
