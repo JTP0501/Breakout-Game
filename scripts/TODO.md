@@ -1,5 +1,5 @@
 # Breakout Game
-*** temp todo-list (Phase 1)
+- temp todo-list (Phase 1)
 
 ### Column Name
 - [ ] Assets ~3d #type @name yyyy-mm-dd
