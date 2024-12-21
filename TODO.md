@@ -3,8 +3,8 @@
 
 ### Column Name
 - [ ] Assets 
-    - [ ] Ball
-    - [ ] Paddle
+    - [x] Ball
+    - [x] Paddle
     - [ ] Bricks (Type 1,2,3)
     
 - [ ] Game Logic 
