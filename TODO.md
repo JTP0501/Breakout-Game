@@ -15,4 +15,4 @@
     - [ ] GAME_OVER STATE
 
 ### Completed Column ✓
-- [x] Concept Finalization (Christmas Theme)
+- [x] Concept Finalization (Ghibli Theme)
