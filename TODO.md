@@ -2,7 +2,6 @@
 - temp todo-list (Phase 1)
 
 ### Column Name
-- [ ] Concept Finalization
 - [ ] Assets 
     - [ ] Ball
     - [ ] Paddle
@@ -16,3 +15,4 @@
     - [ ] GAME_OVER STATE
 
 ### Completed Column ✓
+- [✓] Concept Finalization (Christmas Theme)

@@ -32,7 +32,7 @@ class Ball:
                               ceil(trail_x + self.trail_margin)),
                     pyxel.rndi(int(trail_y), 
                               ceil(trail_y + self.trail_margin)),
-                    col=pyxel.COLOR_YELLOW
+                    col=pyxel.COLOR_WHITE
                 )
         # Draw the ball itself
         pyxel.circ(self.x, self.y, self.r, col=pyxel.COLOR_WHITE)  # Glowing ball
