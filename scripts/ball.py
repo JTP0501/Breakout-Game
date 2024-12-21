@@ -1,4 +1,5 @@
 import pyxel
+
 from paddle import Paddle
 from brick import Brick
 from math import ceil
@@ -14,20 +15,27 @@ class Ball:
         self.r: int = 2
         self.out_of_bounds: bool = False
         self.trail: list[tuple[float, float]] = []
+        self.trail_margin: float = 3
+        self.shimmer_counter: int = 0
+        self.shimmer_rate: int = 3
 
     def draw(self) -> None:
         """ Drawing method for ball and its shimmering trail """
         
         # Draw the shimmering trail
-        for i, (trail_x, trail_y) in enumerate(self.trail):
-            # Make the trail shimmer with a uniform color and fading brightness
-            brightness = max(0, 15 - i)  # Diminish brightness over time
-            color = pyxel.COLOR_YELLOW - (brightness // 2)  # Uniform shimmer color, fading
-            # Draw the trail as small dots
-            pyxel.pset(trail_x, trail_y, color)
-
-        # Draw the ball itself (round shape with a glowing effect)
-        pyxel.circ(self.x, self.y, self.r, col=pyxel.COLOR_YELLOW)  # Glowing ball
+        self.shimmer_counter = (self.shimmer_counter + 1) % self.shimmer_rate
+        if self.shimmer_counter == 0: # "Shimmer" for certain frames only
+            for _, (trail_x, trail_y) in enumerate(self.trail):
+                # Make the trail shimmer with a uniform color and fading brightness
+                pyxel.pset(
+                    pyxel.rndi(ceil(trail_x - self.trail_margin), 
+                              ceil(trail_x + self.trail_margin)),
+                    pyxel.rndi(int(trail_y), 
+                              ceil(trail_y + self.trail_margin)),
+                    col=pyxel.COLOR_YELLOW
+                )
+        # Draw the ball itself
+        pyxel.circ(self.x, self.y, self.r, col=pyxel.COLOR_WHITE)  # Glowing ball
 
     def update(self) -> None:
         """ Move the ball, then check if it should bounce """
