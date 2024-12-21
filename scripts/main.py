@@ -224,7 +224,7 @@ class BreakoutGame:
 
     def _draw(self) -> None:
         """ General drawing method """
-        pyxel.cls(pyxel.COLOR_DARK_BLUE)
+        pyxel.cls(pyxel.COLOR_BROWN)
 
         match self.current_game_state:
             case GameState.READY:
