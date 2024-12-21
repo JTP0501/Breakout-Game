@@ -228,15 +228,19 @@ class BreakoutGame:
         """ General drawing method """
         pyxel.cls(0)
 
-        if self.current_game_state == GameState.WIN:
-            pyxel.text(10, pyxel.height - 10, "Game Over! You've completed all stages!", pyxel.COLOR_WHITE, None)
-            return
-        if self.current_game_state == GameState.READY:
-            self._draw_ready_state()
-
-        if self.current_game_state == GameState.GAME_OVER:
-            pyxel.text(10, pyxel.height - 10, "Game Over!", pyxel.COLOR_WHITE, None)
-            return
+        match self.current_game_state:
+            case GameState.READY:
+                self._draw_ready_state()
+            case GameState.RUNNING:
+                pass
+            case GameState.DROPPED:
+                pass
+            case GameState.GAME_OVER:
+                pyxel.text(10, pyxel.height - 10, "Game Over!z", pyxel.COLOR_WHITE, None)
+                return
+            case GameState.WIN:
+                pyxel.text(10, pyxel.height - 10, "Game Over! You've completed all stages!", pyxel.COLOR_WHITE, None)
+                return
 
         self._draw_game_elements()
         self._draw_ui()

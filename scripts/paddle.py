@@ -10,7 +10,8 @@ class Paddle:
         self.y = pyxel.height - 50
         self.mid_sections = 4
         self.sprite_img = 0
-        self.sprite_w = 8
+        self.sprite_w = 8 
+        self.sprite_h = 8
         self.sprite_end_u = 8
         self.sprite_end_v = 0
         self.sprite_mid_u = 0
@@ -30,7 +31,7 @@ class Paddle:
             self.sprite_end_u,
             self.sprite_end_v,
             self.sprite_w,
-            self.sprite_w
+            self.sprite_h
         )
         for i in range(0, self.mid_sections):
             pyxel.blt(
@@ -40,7 +41,7 @@ class Paddle:
                 self.sprite_mid_u,
                 self.sprite_mid_v,
                 self.sprite_w,
-                self.sprite_w
+                self.sprite_h
             )
 
         pyxel.blt(
@@ -50,7 +51,7 @@ class Paddle:
             self.sprite_end_u,
             self.sprite_end_v,
             -self.sprite_w,
-            -self.sprite_w
+            -self.sprite_h
         )
 
     def deflect_force(self, u: float) -> float:
