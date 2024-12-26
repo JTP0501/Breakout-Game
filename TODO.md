@@ -17,10 +17,10 @@
     - [] Win Screen
 - [x] Revised Collision Logic Fitting the Guidelines
 - [ ] Stages (4)
-    - Stage 0
     - Stage 1
     - Stage 2
     - Stage 3
+    - Stage 4
 
 - [ ] Revised Scoring System (Dropping Score Objects)
 - [ ] Power Ups
