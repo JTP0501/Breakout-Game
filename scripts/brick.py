@@ -10,7 +10,6 @@ BrickType: dict[int, dict[str, int]] = {
         "w": 30,
         "h": 14,
         "colkey": 0,
-        "score": 1
     },
     2: {
         "img": 0,
@@ -19,7 +18,6 @@ BrickType: dict[int, dict[str, int]] = {
         "w": 30,
         "h": 14,
         "colkey": 0,
-        "score": 1
     },
     3: {
         "img": 0,
@@ -28,7 +26,6 @@ BrickType: dict[int, dict[str, int]] = {
         "w": 30,
         "h": 14,
         "colkey": 0,
-        "score": 1
     },
     4: {
         "img": 0,
@@ -37,7 +34,6 @@ BrickType: dict[int, dict[str, int]] = {
         "w": 30,
         "h": 14,
         "colkey": 0,
-        "score": 1
     }, 
 }
 
@@ -50,7 +46,6 @@ class Brick:
         self.img = BrickType[self.brick_type]["img"]
         self.w = BrickType[brick_type]["w"]
         self.h = BrickType[brick_type]["h"]
-        self.score = BrickType[brick_type]["score"]
         self.skins_1 = [(17,1), (17,17), (17,33), (17,49), (17,65), (17,81)]
         if brick_type == 1:
             self.u, self.v = choice(self.skins_1)
