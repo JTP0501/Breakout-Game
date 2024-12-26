@@ -111,21 +111,19 @@ class BreakoutGame:
         self.ball.speed_x = cos(angle_rad) * 2.5
         self.ball.speed_y = -sin(angle_rad) * 2.5
 
-        # Transition to running state
+        # transitions to running state
         self.current_game_state = GameState.RUNNING
 
     def _check_collision(self) -> None:
         """ Checks for all kinds of collisions """
         # Ball vs Paddle
-        collision: bool = self.ball.detect_collision(self.paddle, is_paddle=True)[0] # if collides with baddle
-        if collision:
-            pass # Nothing yet
+        collision: bool = self.ball.detect_collision(self.paddle, is_paddle=True)
+        
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))): # checks all bricks for collisions
             b: Brick = self.bricks[i]
-            collision, score = self.ball.detect_collision(b)
+            collision = self.ball.detect_collision(b)
             if collision:
-                self.stats.score += score # updates score with score value of collided brick
                 del self.bricks[i] # removes brick that collides with ball (for now)
                 break
 
@@ -207,7 +205,7 @@ class BreakoutGame:
             self.paddle.y,
             x_end,
             y_end,
-            pyxel.COLOR_YELLOW
+            pyxel.COLOR_RED
         )
     
     def _draw_game_elements(self) -> None:
