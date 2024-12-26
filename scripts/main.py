@@ -27,7 +27,7 @@ class BreakoutGame:
         """ Constructor """
 
         self._init_pyxel() # initializes pyxel settings
-        self.gravity: float = 0.10
+        self.gravity: float = 0.007
         self.stats: GameStats # holds game stats
          
         self.paddle: Paddle = Paddle() # initializes a paddle
@@ -51,7 +51,7 @@ class BreakoutGame:
     @classmethod
     def _init_pyxel(cls) -> None:
         """ Initializes Pyxel engine settings """
-        pyxel.init(width=420, height=200, display_scale=3, title="Breakout Game", fps=60)
+        pyxel.init(width=450, height=200, display_scale=3, title="Breakout Game", fps=60)
         pyxel.load("../assets/resources.pyxres") # our resource file
 
     # +++++++++++++++++++++++++++++++++ STAGE MANAGEMENT +++++++++++++++++++++++++++++++++
@@ -109,7 +109,6 @@ class BreakoutGame:
         angle_rad: float = radians(self.angle)
         self.ball.speed_x = cos(angle_rad) * 2.5
         self.ball.speed_y = -sin(angle_rad) * 2.5
-        self.ball.gravity = 0.007
 
         # Transition to running state
         self.current_game_state = GameState.RUNNING
@@ -117,7 +116,7 @@ class BreakoutGame:
     def _check_collision(self) -> None:
         """ Checks for all kinds of collisions """
         # Ball vs Paddle
-        collision: bool = self.ball.detect_collision(self.paddle, paddle=True)[0] # if collides with baddle
+        collision: bool = self.ball.detect_collision(self.paddle, is_paddle=True)[0] # if collides with baddle
         if collision:
             pass # Nothing yet
         # Ball vs Bricks
