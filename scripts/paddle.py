@@ -11,21 +11,14 @@ class Paddle:
         self.sprite_img : int = 1  # The img bank where the paddle is located
         self.sprite_u : int = 0 # the (u,v) of the paddle in the img (u=0, v=7)    
         self.sprite_v: int = 7
-        self.speed: float = 4 # speed of paddle 
+        self.speed: float = 2.5 # speed of paddle 
         self.score: int = 0       # Just for pyright (not used here)
 
         self.mark_w: int = 12
         self.mark_h: int = 16
         self.mark_u: int = 2
         self.mark_v: int = 16
-
-# +++++++++++++++++++++++++++++++++ HELPER METHODS +++++++++++++++++++++++++++++++++
-
-    def deflect_force(self, u: float) -> float:
-        """ Calculate the deflect force of the ball on the paddle """
-        force: float = (u - (self.x + self.w / 2)) / 10  # Force based on hit position
-        return force
-
+        
 # +++++++++++++++++++++++++++++++++ UPDATE METHODS +++++++++++++++++++++++++++++++++
 
     def update(self) -> None:
