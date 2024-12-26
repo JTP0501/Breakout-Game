@@ -1,6 +1,7 @@
 import pyxel
-from enum import Enum, auto
 import json
+
+from enum import Enum, auto
 from math import radians, sin, cos
 from dataclasses import dataclass
 
@@ -27,6 +28,7 @@ class BreakoutGame:
         """ Constructor """
 
         self._init_pyxel() # initializes pyxel settings
+        self.gravity: float = 0.007
         self.stats: GameStats # holds game stats
          
         self.paddle: Paddle = Paddle() # initializes a paddle
@@ -35,7 +37,7 @@ class BreakoutGame:
         self.angle_direction: float # 1 is left to right, -1 is right to left
         self.angle_cycle_speed: float # degrees per frame     
 
-        self.ball: Ball = Ball() # initializes a ball 
+        self.ball: Ball = Ball(self.gravity) # initializes a ball 
         self._reset_ball() # makes sure that ball starts at paddle 
 
         self.stages: list[dict[str, list[dict[str, int]]]] = self._load_stages("../assets/stages.json") # contains all the predefined stages
@@ -50,7 +52,7 @@ class BreakoutGame:
     @classmethod
     def _init_pyxel(cls) -> None:
         """ Initializes Pyxel engine settings """
-        pyxel.init(width=420, height=200, display_scale=3, title="Breakout Game", fps=60)
+        pyxel.init(width=450, height=200, display_scale=3, title="Breakout Game", fps=60)
         pyxel.load("../assets/resources.pyxres") # our resource file
 
     # +++++++++++++++++++++++++++++++++ STAGE MANAGEMENT +++++++++++++++++++++++++++++++++
@@ -109,21 +111,19 @@ class BreakoutGame:
         self.ball.speed_x = cos(angle_rad) * 2.5
         self.ball.speed_y = -sin(angle_rad) * 2.5
 
-        # Transition to running state
+        # transitions to running state
         self.current_game_state = GameState.RUNNING
 
     def _check_collision(self) -> None:
         """ Checks for all kinds of collisions """
         # Ball vs Paddle
-        collision: bool = self.ball.detect_collision(self.paddle, paddle=True)[0] # if collides with baddle
-        if collision:
-            pass # Nothing yet
+        collision: bool = self.ball.detect_collision(self.paddle, is_paddle=True)
+        
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))): # checks all bricks for collisions
             b: Brick = self.bricks[i]
-            collision, score = self.ball.detect_collision(b)
+            collision = self.ball.detect_collision(b)
             if collision:
-                self.stats.score += score # updates score with score value of collided brick
                 del self.bricks[i] # removes brick that collides with ball (for now)
                 break
 
@@ -205,7 +205,7 @@ class BreakoutGame:
             self.paddle.y,
             x_end,
             y_end,
-            pyxel.COLOR_YELLOW
+            pyxel.COLOR_RED
         )
     
     def _draw_game_elements(self) -> None:
@@ -223,14 +223,17 @@ class BreakoutGame:
 
     def _draw(self) -> None:
         """ General drawing method """
-        pyxel.cls(pyxel.COLOR_DARK_BLUE)
+        pyxel.cls(pyxel.COLOR_GRAY)
 
         match self.current_game_state:
             case GameState.READY:
                 self._draw_ready_state()
             case GameState.RUNNING:
+                # add the mouse cursor position while running
+                # make some bg elements move?
                 pass # to be added (maybe?)
             case GameState.DROPPED:
+                # some indicator that the ball dropped (visual effect only)
                 pass # to be added (maybe?)
             case GameState.GAME_OVER:
                 pyxel.text(10, pyxel.height - 10, "Game Over!", pyxel.COLOR_WHITE, None)
