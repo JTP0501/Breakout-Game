@@ -1,6 +1,7 @@
 import pyxel
-from enum import Enum, auto
 import json
+
+from enum import Enum, auto
 from math import radians, sin, cos
 from dataclasses import dataclass
 
