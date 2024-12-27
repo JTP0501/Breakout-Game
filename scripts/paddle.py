@@ -11,7 +11,7 @@ class Paddle:
         self.sprite_img : int = 1  # The img bank where the paddle is located
         self.sprite_u : int = 0 # the (u,v) of the paddle in the img (u=0, v=7)    
         self.sprite_v: int = 7
-        self.speed: float = 2.5 # speed of paddle 
+        self.speed: float = 2.75 # speed of paddle 
         self.score: int = 0       # this is just for pyright (not used here)
 
         self.mark_w: int = 12
