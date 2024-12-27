@@ -257,7 +257,6 @@ class BreakoutGame:
     def _draw_ready_state(self) -> None:
         """ Draws elements for READY state """
 
-        self._draw_game_elements()  # draws the paddle, ball, and bricks
         self._draw_ui() # draws the ui
 
         angle_rad = radians(self.angle) # angle from degrees to radians
@@ -283,6 +282,7 @@ class BreakoutGame:
                 pyxel.COLOR_BLACK,
                 None
             )
+        self._draw_game_elements()  # draws the paddle, ball, and bricks
         
     def _draw_running_state(self) -> None:
         """ Draws the RUNNING state """
@@ -312,7 +312,7 @@ class BreakoutGame:
         # "YOU WIN" text
         pyxel.blt(x=168, y=80, img=0, u=48, v=48, w=136, h=16, colkey=pyxel.COLOR_WHITE, scale=2)
         pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
-        # display score
+        # display final score
         
     def _draw_game_elements(self) -> None:
         """ Draws the paddle, ball, and bricks """
@@ -340,12 +340,10 @@ class BreakoutGame:
                 0,  # v (y coordinate in the asset)
                 16,  # width of the heart
                 16,  # height of the heart
-                pyxel.COLOR_ORANGE,  # transparency color
-                scale=0.5 # scaled down
+                pyxel.COLOR_ORANGE  # transparency color
             )
         pyxel.text(10, pyxel.height - 20, f"Score: {self.stats.score}", pyxel.COLOR_BLACK, None)
-
-
+        
     def _draw(self) -> None:
         """ General drawing method """
 
