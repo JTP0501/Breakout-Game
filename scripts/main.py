@@ -128,7 +128,8 @@ class BreakoutGame:
             b: Brick = self.bricks[i]
             collision = self.ball.detect_collision(b)
             if collision:
-                del self.bricks[i] # removes brick that collides with ball (for now)
+                if b.hit():
+                    del self.bricks[i] # removes brick that collides with ball and has no health
                 break
 
     def _check_input(self) -> None:
@@ -325,7 +326,7 @@ class BreakoutGame:
         """ Draw UI elements like score and lives """
         heart_x: float = 10  # starting x position for hearts
         heart_y: float = 10  # starting y position for hearts (top-left corner)
-        heart_spacing: float = 9  # spacing between each heart (adjusted for 16x16 hearts)
+        heart_spacing: float = 12 # spacing between each heart
         row_limit: int = 10  # max hearts per row
 
         # Draw hearts for lives
