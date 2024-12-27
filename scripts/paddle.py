@@ -4,20 +4,20 @@ import pyxel
 class Paddle:
     def __init__(self) -> None:
         """ Constructor for paddle """
-        self.w: float = 80  # width of the paddle (based on sprite)
-        self.h: float = 9   # height of the paddle (based on sprite)
+        self.w: float = 72  # width of the paddle (based on sprite)
+        self.h: float = 14   # height of the paddle (based on sprite)
         self.x: float = pyxel.width // 2 - self.w // 2  # starts in the middle of the screen
         self.y: float = pyxel.height - 40  # positions it near the bottom
         self.sprite_img : int = 1  # The img bank where the paddle is located
         self.sprite_u : int = 0 # the (u,v) of the paddle in the img (u=0, v=7)    
-        self.sprite_v: int = 7
+        self.sprite_v: int = 2
         self.speed: float = 2.75 # speed of paddle 
         self.score: int = 0       # this is just for pyright (not used here)
 
         self.mark_w: int = 12
         self.mark_h: int = 16
         self.mark_u: int = 2
-        self.mark_v: int = 16
+        self.mark_v: int = 32
         
 # +++++++++++++++++++++++++++++++++ UPDATE METHODS +++++++++++++++++++++++++++++++++
 
