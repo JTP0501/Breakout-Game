@@ -7,9 +7,9 @@ BrickType: dict[int, dict[str, int]] = {
         "img": 0,
         "u": 0,
         "v": 0,
-        "w": 30,
-        "h": 14,
-        "colkey": 0,
+        "w": 32,
+        "h": 16,
+        "colkey": 6,
     },
     2: {
         "img": 0,
@@ -46,7 +46,7 @@ class Brick:
         self.img = BrickType[self.brick_type]["img"]
         self.w = BrickType[brick_type]["w"]
         self.h = BrickType[brick_type]["h"]
-        self.skins_1 = [(17,1), (17,17), (17,33), (17,49), (17,65), (17,81)]
+        self.skins_1 = [(16,0), (16,16), (16,32), (16,48), (16,64), (16,80)]
         if brick_type == 1:
             self.u, self.v = choice(self.skins_1)
         else:
