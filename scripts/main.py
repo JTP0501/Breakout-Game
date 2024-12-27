@@ -21,7 +21,7 @@ class GameState(Enum):
 @dataclass
 class GameStats:
     score: int = 0 # score tracker
-    lives: int = 0 # lives tracker
+    lives: int = 3 # lives tracker
 
 class BreakoutGame:
     def __init__(self) -> None:
@@ -229,11 +229,18 @@ class BreakoutGame:
 
     def _draw_game_over_state(self) -> None:
         """ Draws the GAME_OVER state """
-        # draws game over text
         
+        # "GAME OVER" text
         pyxel.blt(x=139, y=80, img=0, u=48, v=32, w=176, h=16, colkey=pyxel.COLOR_WHITE, scale=2)
-        pyxel.text(x=175, y=130, s="Press Enter to Play Again!", col=pyxel.COLOR_BLACK, font=None)
+        pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
     
+    def _draw_win_state(self) -> None:
+        """ Draws the WIN state """
+        # "YOU WIN" text
+        pyxel.blt(x=168, y=80, img=0, u=48, v=48, w=136, h=16, colkey=pyxel.COLOR_WHITE, scale=2)
+        pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
+        # display score
+        
     def _draw_game_elements(self) -> None:
         """ Draws the paddle, ball, and bricks """
         self.paddle.draw()
@@ -277,13 +284,10 @@ class BreakoutGame:
             case GameState.RUNNING:
                 self._draw_running_state()
             case GameState.DROPPED:
-                # some indicator that the ball dropped (visual effect only)
-                pass # to be added (maybe?)
+                pass 
             case GameState.GAME_OVER:
                 self._draw_game_over_state()
-
             case GameState.WIN:
-                pyxel.text(10, pyxel.height - 10, "Game Over! You've completed all stages!", pyxel.COLOR_WHITE, None)
-        
+                self._draw_win_state()
         
 BreakoutGame() # game call
