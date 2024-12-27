@@ -15,7 +15,8 @@ class GameState(Enum):
     START = auto() # starting screen
     READY = auto() # ready to start 
     RUNNING = auto() # in progress
-    DROPPED = auto() # ball is out of bounds 
+    DROPPED = auto() # ball is out of bounds
+    STAGE_TRANSITION = auto() # transitioning state
     GAME_OVER = auto() # player lost the game
     WIN = auto() # player won the game
 
@@ -48,6 +49,7 @@ class BreakoutGame:
         self.current_game_state: GameState # game state tracker
         self._start_new_game() # starts a new game
         self.dropped_timer: float = 0  # timer for DROPPED state
+        self.transition_timer: float = 0 # time for STAGE_TRANSITION state
 
         pyxel.run(self._update, self._draw) # runs game loop
 
@@ -78,9 +80,8 @@ class BreakoutGame:
         """ Move to the next stage."""
         if self.current_stage < len(self.stages):
             self.current_stage += 1
-            self._load_stage(self.current_stage - 1) # stages is 0-indexed
-            self._reset_ball()
-            self.current_game_state = GameState.READY
+            self.current_game_state = GameState.STAGE_TRANSITION
+            self.transition_timer = pyxel.frame_count  # initializes the transition timer
         else:
             self.current_game_state = GameState.WIN
 
@@ -156,7 +157,7 @@ class BreakoutGame:
 
             if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
                 pyxel.mouse(False) # disable mouse cursor view
-                self.current_game_state = GameState.READY
+                self.current_game_state = GameState.STAGE_TRANSITION
 
     def _update_ready_state(self) -> None:
         """ Update logic for READY state """
@@ -173,8 +174,8 @@ class BreakoutGame:
         """ Update logic for RUNNING state """
         self.ball.update() # moves the ball
         self._check_collision() # checks for collisions
-
-        if not self.bricks: # all bricks cleared (stage cleared)
+        # 4 is indestructible
+        if not self.bricks or all(brick.brick_type == 4 for brick in self.bricks): # all bricks cleared (stage cleared)
             if self.current_stage == len(self.stages): # last stage cleared
                 self.current_game_state = GameState.WIN
             else:
@@ -202,6 +203,13 @@ class BreakoutGame:
             self.stats.lives = 0  # Ensures lives don't go negative
             self.current_game_state = GameState.GAME_OVER
 
+    def _update_stage_transition_state(self) -> None:
+        """ Update logic for STAGE_TRANSITION state """
+        # waits for 120 frames (2 seconds at 60 FPS)
+        if pyxel.frame_count - self.transition_timer > 120:
+            self._load_stage(self.current_stage - 1)  # loads the next stage
+            self._reset_ball()  # resets the ball to the paddle
+            self.current_game_state = GameState.READY
 
     def _update(self) -> None:
         """ General update method """
@@ -217,6 +225,8 @@ class BreakoutGame:
                 self._update_running_state()
             case GameState.DROPPED:
                 self._update_dropped_state()
+            case GameState.STAGE_TRANSITION:
+                self._update_stage_transition_state()
             case GameState.GAME_OVER:
                 pass # to be added
             case GameState.WIN:
@@ -300,6 +310,17 @@ class BreakoutGame:
             pyxel.COLOR_BLACK,
             None
         )
+    def _draw_stage_transition_state(self) -> None:
+        """ Draws elements for STAGE_TRANSITION state """
+        pyxel.cls(pyxel.COLOR_LIGHT_BLUE)  # background
+        message = f"Stage {self.current_stage}"
+        pyxel.text(
+            pyxel.width // 2 - len(message) * 2.5,  # center horizontally
+            pyxel.height // 2 - 4,  # center vertically
+            message,
+            pyxel.COLOR_BLACK,
+            None
+        )
 
     def _draw_game_over_state(self) -> None:
         """ Draws the GAME_OVER state """
@@ -359,6 +380,8 @@ class BreakoutGame:
                 self._draw_running_state()
             case GameState.DROPPED:
                 self._draw_dropped_state()
+            case GameState.STAGE_TRANSITION:
+                self._draw_stage_transition_state()
             case GameState.GAME_OVER:
                 self._draw_game_over_state()
             case GameState.WIN:
