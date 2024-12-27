@@ -19,7 +19,7 @@ class Ball:
         self.speed_y: float
         self.gravity: float = gravity
         self.VELOCITY_INCREASE: float = 0.25
-        self.MAX_SPEED: float = 3.25
+        self.MAX_SPEED: float = 3
         self.r: int = 4 # ball's radius (based on the sprite)
         
         # ball trail
