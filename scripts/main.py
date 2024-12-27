@@ -21,7 +21,7 @@ class GameState(Enum):
 @dataclass
 class GameStats:
     score: int = 0 # score tracker
-    lives: int = 3 # lives tracker
+    lives: int = 0 # lives tracker
 
 class BreakoutGame:
     def __init__(self) -> None:
@@ -193,13 +193,17 @@ class BreakoutGame:
 # +++++++++++++++++++++++++++++++++ DRAW METHODS +++++++++++++++++++++++++++++++++
 
     def _draw_ready_state(self) -> None:
-        """ Draw logic for READY state """
+        """ Draws elements for READY state """
+
+        self._draw_game_elements()  # draws the paddle, ball, and bricks
+        self._draw_ui() # draws the ui
+
         angle_rad = radians(self.angle) # angle from degrees to radians
         indicator_length = 25  # length of the indicator line
         x_end = self.paddle.x + self.paddle.w / 2 + indicator_length * cos(angle_rad) # the x-coord of the end of the indicator line
         y_end = self.paddle.y - indicator_length * sin(angle_rad) # the y-coord of the end of the indicator line
 
-        # Draws the indicator line
+        # draws the indicator line
         pyxel.line(
             self.paddle.x + self.paddle.w / 2,
             self.paddle.y,
@@ -207,6 +211,28 @@ class BreakoutGame:
             y_end,
             pyxel.COLOR_RED
         )
+
+        # adds blinking text instruction
+        if (pyxel.frame_count // 30) % 2 == 0:  # toggle every 30 frames
+            pyxel.text(
+                pyxel.width // 2 - 50,  # centered horizontally
+                pyxel.height // 2,  # centered vertically
+                "Left Mouse Click to Launch!",
+                pyxel.COLOR_BLACK,
+                None
+            )
+        
+    def _draw_running_state(self) -> None:
+        """ Draws the RUNNING state """
+        self._draw_game_elements()  # draws the paddle, ball, and bricks
+        self._draw_ui() # draws the ui
+
+    def _draw_game_over_state(self) -> None:
+        """ Draws the GAME_OVER state """
+        # draws game over text
+        
+        pyxel.blt(x=139, y=80, img=0, u=48, v=32, w=176, h=16, colkey=pyxel.COLOR_WHITE, scale=2)
+        pyxel.text(x=175, y=130, s="Press Enter to Play Again!", col=pyxel.COLOR_BLACK, font=None)
     
     def _draw_game_elements(self) -> None:
         """ Draws the paddle, ball, and bricks """
@@ -217,32 +243,47 @@ class BreakoutGame:
     
     def _draw_ui(self) -> None:
         """ Draw UI elements like score and lives """
-        pyxel.text(10, pyxel.height - 30, f"Lives: {self.stats.lives}", pyxel.COLOR_WHITE, None)
-        pyxel.text(10, pyxel.height - 20, f"Score: {self.stats.score}", pyxel.COLOR_WHITE, None)
-        # to be expanded on
+        heart_x: float = 10  # starting x position for hearts
+        heart_y: float = 10  # starting y position for hearts (top-left corner)
+        heart_spacing: float = 9  # spacing between each heart (adjusted for 16x16 hearts)
+        row_limit: int = 10  # max hearts per row
+
+        # Draw hearts for lives
+        for i in range(self.stats.lives):
+            x = heart_x + (i % row_limit) * heart_spacing  # horizontal position
+            y = heart_y + (i // row_limit) * heart_spacing  # vertical position
+            pyxel.blt(
+                x,  # x position of each heart
+                y,  # y position
+                0,  # bank
+                0,  # u (x coordinate in the asset)
+                0,  # v (y coordinate in the asset)
+                16,  # width of the heart
+                16,  # height of the heart
+                pyxel.COLOR_ORANGE,  # transparency color
+                scale=0.5 # scaled down
+            )
+        pyxel.text(10, pyxel.height - 20, f"Score: {self.stats.score}", pyxel.COLOR_BLACK, None)
+
 
     def _draw(self) -> None:
         """ General drawing method """
-        pyxel.cls(pyxel.COLOR_GRAY)
+
+        pyxel.cls(pyxel.COLOR_LIGHT_BLUE)
 
         match self.current_game_state:
             case GameState.READY:
                 self._draw_ready_state()
             case GameState.RUNNING:
-                # add the mouse cursor position while running
-                # make some bg elements move?
-                pass # to be added (maybe?)
+                self._draw_running_state()
             case GameState.DROPPED:
                 # some indicator that the ball dropped (visual effect only)
                 pass # to be added (maybe?)
             case GameState.GAME_OVER:
-                pyxel.text(10, pyxel.height - 10, "Game Over!", pyxel.COLOR_WHITE, None)
-                return # temp
+                self._draw_game_over_state()
+
             case GameState.WIN:
                 pyxel.text(10, pyxel.height - 10, "Game Over! You've completed all stages!", pyxel.COLOR_WHITE, None)
-                return # temp
-            
-        self._draw_game_elements()
-        self._draw_ui()
+        
         
 BreakoutGame() # game call
