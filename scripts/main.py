@@ -247,8 +247,6 @@ class BreakoutGame:
 # +++++++++++++++++++++++++++++++++ DRAW METHODS +++++++++++++++++++++++++++++++++
     def _draw_start_state(self) -> None:
         """ Draw elements for START state """
-        #background color
-        pyxel.cls(pyxel.COLOR_LIGHT_BLUE)
         
         # game title
         
@@ -397,13 +395,26 @@ class BreakoutGame:
                 16,  # height of the heart
                 pyxel.COLOR_ORANGE  # transparency color
             )
-        pyxel.text(10, pyxel.height - 20, f"Score: {self.stats.score}", pyxel.COLOR_BLACK, None)
+        pyxel.text(pyxel.width - 50, 10, f"Score: {self.stats.score}", pyxel.COLOR_BLACK, None)
+    
+    def _draw_background(self) -> None:
+        """ Draws the background """
+        pyxel.blt(
+            x=113,
+            y=32,
+            img=2,
+            u=0,
+            v=0,
+            w=224,
+            h=112,
+            scale=2.005
+        )
         
     def _draw(self) -> None:
         """ General drawing method """
 
         pyxel.cls(pyxel.COLOR_LIGHT_BLUE)
-
+        self._draw_background()
         match self.current_game_state:
             case GameState.START:
                 self._draw_start_state()
