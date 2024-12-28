@@ -3,6 +3,7 @@ import json
 
 from enum import Enum, auto
 from math import radians, sin, cos
+from random import choice
 from dataclasses import dataclass
 
 from ball import Ball
@@ -51,6 +52,15 @@ class BreakoutGame:
         self.dropped_timer: float = 0  # timer for DROPPED state
         self.transition_timer: float = 0 # time for STAGE_TRANSITION state
 
+        # dropped state prompts
+        self.calcifer_sprites: list[tuple[int, int]] = [(48,64), (88, 64)]
+        self.chosen_skin: tuple[int, int]
+        self.dropped_msgs: list[str] = ["Don't do that again, unless you want to feel my wrath. >:<",
+                                        "I am an extremely powerful fire demon, I won't let you humiliate me.",
+                                        "Please, don't drop me again.",
+                                        "What are you doing?!?!?",
+                                        ]
+        self.chosen_msg: str
         pyxel.run(self._update, self._draw) # runs game loop
 
     @classmethod
@@ -182,6 +192,8 @@ class BreakoutGame:
                 self._next_stage()
 
         if self.ball.out_of_bounds: # if ball dropped
+            self.chosen_skin = choice(self.calcifer_sprites) # choose a sprite for the dropped screen
+            self.chosen_msg = choice(self.dropped_msgs) # choose a msg for the dropped
             self.current_game_state = GameState.DROPPED
     
     def _update_dropped_state(self) -> None:
@@ -191,7 +203,7 @@ class BreakoutGame:
             # shows DROPPED screen and resets the ball after a delay
             if self.dropped_timer == 0:
                 self.dropped_timer = pyxel.frame_count  # initializes the timer
-
+                
             # waits for 120 frames (2 seconds at 60 FPS)
             if pyxel.frame_count - self.dropped_timer > 120:
                 self.dropped_timer = 0  # resets the timer
@@ -307,12 +319,26 @@ class BreakoutGame:
     def _draw_dropped_state(self):
         """Draws the DROPPED state screen."""
         pyxel.cls(pyxel.COLOR_LIGHT_BLUE)  # background
+        
+        # draw calcifer mad/sad
+        pyxel.blt(
+            x=210,
+            y=80,
+            img=0,
+            w=33,
+            h=33,
+            u=self.chosen_skin[0],
+            v=self.chosen_skin[1],
+            colkey=pyxel.COLOR_PINK,
+            scale=4
+        )
+        # draw message
         pyxel.text(
-            pyxel.width // 2 - 50,
-            pyxel.height // 2,
-            "BALL DROPPED!",
-            pyxel.COLOR_BLACK,
-            None
+            x=30,
+            y=15,
+            s=self.chosen_msg,
+            col=pyxel.COLOR_BLACK,
+            font=None
         )
     def _draw_stage_transition_state(self) -> None:
         """ Draws elements for STAGE_TRANSITION state """
