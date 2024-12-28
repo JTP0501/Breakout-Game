@@ -34,7 +34,7 @@ BrickType: dict[int, dict[str, int]] = {
 }
 
 class Brick:
-    def __init__(self, x: float, y: float, brick_type: int) -> None:
+    def __init__(self, x: float, y: float, brick_type: int, K: int) -> None:
         """ Constructor for brick """
         self.brick_type = brick_type
         self.x = x
@@ -49,6 +49,7 @@ class Brick:
         self.skins_3 = [(0, 64), (0,48), (0, 32)] # brick type 3
         self.skins_4 = [(48, 0), (48, 16)] # brick type 4
         self.current_skin: tuple[int, int]
+        self.K = K
         match brick_type:
             case 1:
                 self.current_skin = choice(self.skins_1)
