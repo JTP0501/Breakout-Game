@@ -267,18 +267,21 @@ class BreakoutGame:
         # play button
         button_x, button_y = pyxel.width // 2 - 30, pyxel.height // 2 + 50
         button_width, button_height = 60, 15
-
+        button_color_bg_text: tuple[int, int] = (pyxel.COLOR_RED, pyxel.COLOR_WHITE) # format (bg, text)
+        
+        if button_x <= pyxel.mouse_x <= button_x + button_width and button_y <= pyxel.mouse_y <= button_y + button_height: # if hovered over button
+            button_color_bg_text = (pyxel.COLOR_PURPLE, pyxel.COLOR_GRAY)
         # draw button background
-        pyxel.rect(button_x, button_y, button_width, button_height, pyxel.COLOR_RED)
-
+        pyxel.rect(x=button_x, y=button_y, w=button_width, h=button_height, col=button_color_bg_text[0])
+        
         # button text
         play_text = "PLAY"
         pyxel.text(
-            button_x + button_width // 2 - len(play_text) * 2,  # Center text in button
-            button_y + button_height // 2 - 3,  # Center text vertically
-            play_text,
-            pyxel.COLOR_WHITE,
-            None
+            x=button_x + button_width // 2 - len(play_text) * 2,  # Center text in button
+            y=button_y + button_height // 2 - 3,  # Center text vertically
+            s=play_text,
+            col=button_color_bg_text[1],
+            font=None
         )
 
     def _draw_ready_state(self) -> None:
