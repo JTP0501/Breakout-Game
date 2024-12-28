@@ -152,8 +152,8 @@ class BreakoutGame:
             mouse_x, mouse_y = pyxel.mouse_x, pyxel.mouse_y
 
             # checks if the mouse is within the Play button area
-            button_x, button_y = pyxel.width // 2 - 40, pyxel.height // 2 + 10
-            button_width, button_height = 80, 20
+            button_x, button_y = pyxel.width // 2 - 30, pyxel.height // 2 + 50
+            button_width, button_height = 60, 15
 
             if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
                 pyxel.mouse(False) # disable mouse cursor view
@@ -239,18 +239,22 @@ class BreakoutGame:
         pyxel.cls(pyxel.COLOR_LIGHT_BLUE)
         
         # game title
-        title = "CALCIFER'S COOKOUT"
-        pyxel.text(
-            pyxel.width // 2 - len(title) * 2.5,  # Center the text horizontally
-            pyxel.height // 3,  # Position the text vertically
-            title,
-            pyxel.COLOR_BLACK,
-            None
+        
+        pyxel.blt(
+            x=140,
+            y=45,
+            img=0,
+            u=0,
+            v=128,
+            w=160,
+            h=64,
+            colkey=pyxel.COLOR_PINK,
+            scale=2
         )
 
         # play button
-        button_x, button_y = pyxel.width // 2 - 40, pyxel.height // 2 + 10
-        button_width, button_height = 80, 20
+        button_x, button_y = pyxel.width // 2 - 30, pyxel.height // 2 + 50
+        button_width, button_height = 60, 15
 
         # draw button background
         pyxel.rect(button_x, button_y, button_width, button_height, pyxel.COLOR_RED)
@@ -326,13 +330,13 @@ class BreakoutGame:
         """ Draws the GAME_OVER state """
         
         # "GAME OVER" text
-        pyxel.blt(x=139, y=80, img=0, u=48, v=32, w=176, h=16, colkey=pyxel.COLOR_WHITE, scale=2)
+        pyxel.blt(x=139, y=80, img=0, u=48, v=32, w=176, h=16, colkey=pyxel.COLOR_LIGHT_BLUE, scale=2)
         pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
     
     def _draw_win_state(self) -> None:
         """ Draws the WIN state """
         # "YOU WIN" text
-        pyxel.blt(x=168, y=80, img=0, u=48, v=48, w=136, h=16, colkey=pyxel.COLOR_WHITE, scale=2)
+        pyxel.blt(x=168, y=80, img=0, u=48, v=48, w=136, h=16, colkey=pyxel.COLOR_LIGHT_BLUE, scale=2)
         pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
         # display final score
         
