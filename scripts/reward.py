@@ -7,14 +7,14 @@ class Reward:
         """ Constructor for Score Object """
         self.x = x
         self.y = y
-        self.w = 6
+        self.w = 8
         self.h = 10
         self.accel = falling_accel
         self.speed_y: float = 0.5 # initial speed
         self.P = points
 
 # +++++++++++++++++++++++++++++++++ HELPER METHODS +++++++++++++++++++++++++++++++++
-
+    
     def collides(self, paddle: Paddle) -> tuple[bool, int]:
         """ Method that deals with all collisions of score objects with game elements """
 
@@ -52,7 +52,7 @@ class Reward:
             x=self.x,
             y=self.y,
             img=0,
-            u=1,
+            u=0,
             v=83,
             w=self.w,
             h=self.h,
