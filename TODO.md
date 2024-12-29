@@ -12,9 +12,9 @@
         - [x] 4 - Stone Slabs (Indestructible)
         - [ ] 5 - Ball Maker (??)
     - [ ] Background # same background
-    - [ ] Start Screen
-    - [ ] Game Over Screen
-    - [ ] Win Screen
+    - [x] Start Screen
+    - [x] Game Over Screen
+    - [x] Win Screen
 - [x] Revised Collision Logic Fitting the Guidelines
 - [ ] Stages (4)
     - [x] Stage 1
@@ -22,7 +22,7 @@
     - [ ] Stage 3
     - [ ] Stage 4
 
-- [ ] Revised Scoring System (Dropping Score Objects)
+- [x] Revised Scoring System (Dropping Score Objects)
 - [ ] Power Ups
 - [ ] Add ballmaker brick type
 - [ ] Streak

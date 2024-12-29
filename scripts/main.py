@@ -6,6 +6,7 @@ from math import radians, sin, cos
 from random import choice
 from dataclasses import dataclass
 
+from reward import Reward
 from ball import Ball
 from paddle import Paddle 
 from brick import Brick
@@ -45,7 +46,9 @@ class BreakoutGame:
 
         self.stages: list[dict[str, list[dict[str, int]]]] = self._load_stages("../assets/stages.json") # contains all the predefined stages
         self.current_stage: int # tracks the current stage no. 
+        self.current_P: int | list[dict[str, int]] = 2 # tracks the current "P" value for bricks (for now arbitrary 2)
         self.bricks: list[Brick] = [] # tracks the list of bricks imported from the current stage
+        self.score_objects: list[Reward] = [] # tracks the list of score objects currently at play
 
         self.current_game_state: GameState # game state tracker
         self._start_new_game() # starts a new game
@@ -82,9 +85,11 @@ class BreakoutGame:
         """ Load a specific stage."""
         stage = self.stages[stage_index] # stages is 0-indexed
         self.bricks = [
-            Brick(brick["x"], brick["y"], brick["brick_type"])
+            # we want to randomize the no. of score objects that spawn from a brick (will deal with the objects colliding soon)
+            Brick(brick["x"], brick["y"], brick["brick_type"], K=pyxel.rndi(2,4)) # random K from 2 to 4
             for brick in stage["bricks"]
         ]
+        self.current_P = stage.get("P", 0)
 
     def _next_stage(self) -> None:
         """ Move to the next stage."""
@@ -100,6 +105,7 @@ class BreakoutGame:
     def _start_new_game(self) -> None:
         """ Starts a new game """
         self.stats = GameStats() # initializes a GameStats object for new game
+        self.score_objects.clear() # reset score objects tracker
         self.current_stage = 1 # sets the current stage to the first one (1-indexed)
         self._load_stage(self.current_stage - 1) # loads the current stage
         self._reset_ball() # resets ball position to paddle
@@ -132,17 +138,27 @@ class BreakoutGame:
     def _check_collision(self) -> None:
         """ Checks for all kinds of collisions """
         # Ball vs Paddle
-        collision: bool = self.ball.detect_collision(self.paddle, is_paddle=True)
+        self.ball.detect_collision(self.paddle, is_paddle=True)
         
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))): # checks all bricks for collisions
             b: Brick = self.bricks[i]
-            collision = self.ball.detect_collision(b)
-            if collision:
+            brick_collision = self.ball.detect_collision(b)
+            if brick_collision:
                 if b.hit():
+                    # spawn K score objects
+                    self._spawn_score_objects(pyxel.rndi(2,5), b)
                     del self.bricks[i] # removes brick that collides with ball and has no health
                 break
-
+   
+        # Reward vs World (Paddle and Bot)
+        for i in reversed(range(len(self.score_objects))):
+            r = self.score_objects[i]
+            reward_collision: tuple[bool, int] = r.collides(self.paddle)
+            if reward_collision[0]:
+                self.stats.score += reward_collision[1]
+                del self.score_objects[i]
+    
     def _check_input(self) -> None:
         """ Checks for inputs by user (depending on the game state)"""
         if self.current_game_state == GameState.READY:
@@ -152,6 +168,38 @@ class BreakoutGame:
         if self.current_game_state in {GameState.GAME_OVER, GameState.WIN}:
             if pyxel.btnp(pyxel.KEY_RETURN): # press enter to start a new game
                 self._start_new_game()
+
+    def _spawn_score_objects(self, K: int, brick: Brick) -> None:
+        """ Spawns K rectangular score objects within the bounds of a hit brick without overlap """
+        # brick properties
+        brick_x, brick_y = brick.x, brick.y  # Top-left corner of the brick
+        brick_width, brick_height = brick.w, brick.h
+
+        # score object properties
+        obj_width = 8  # fixed width
+        obj_height = 10  # fixed height
+        padding = 2  # minimal padding between objects
+
+        # determines maximum rows and columns of score objects within the brick
+        max_cols = (brick_width + padding) // (obj_width + padding)
+        max_rows = (brick_height + padding) // (obj_height + padding)
+        total_positions = int(max_cols * max_rows)  # total available slots
+
+        # generates and places score objects
+        for i in range(K):
+            row, col = divmod(i % total_positions, max_cols)  # Reuse positions if K > total_positions
+            spawn_x = brick_x + col * (obj_width + padding)
+            spawn_y = brick_y + row * (obj_height + padding)
+
+            if isinstance(self.current_P, int):
+                self.score_objects.append(
+                    Reward(
+                        x=spawn_x,
+                        y=spawn_y,
+                        points=self.current_P,
+                        falling_accel=self.gravity
+                    )
+                )
 
 # +++++++++++++++++++++++++++++++++ UPDATE METHODS +++++++++++++++++++++++++++++++++
 
@@ -183,13 +231,18 @@ class BreakoutGame:
     def _update_running_state(self) -> None:
         """ Update logic for RUNNING state """
         self.ball.update() # moves the ball
+        
+        for r in self.score_objects: # moves the score objects
+            r.update()
+
         self._check_collision() # checks for collisions
         # 4 is indestructible
         if not self.bricks or all(brick.brick_type == 4 for brick in self.bricks): # all bricks cleared (stage cleared)
-            if self.current_stage == len(self.stages): # last stage cleared
-                self.current_game_state = GameState.WIN
-            else:
-                self._next_stage()
+            if not self.score_objects: # if there are not score objects in the screen
+                if self.current_stage == len(self.stages): # last stage cleared
+                    self.current_game_state = GameState.WIN
+                else:
+                    self._next_stage()
 
         if self.ball.out_of_bounds: # if ball dropped
             self.chosen_skin = choice(self.calcifer_sprites) # choose a sprite for the dropped screen
@@ -301,16 +354,18 @@ class BreakoutGame:
             pyxel.COLOR_RED
         )
 
+        self._draw_game_elements()  # draws the paddle, ball, and bricks, and (score objects if any)
+
         # adds blinking text instruction
         if (pyxel.frame_count // 30) % 2 == 0:  # toggle every 30 frames
             pyxel.text(
                 pyxel.width // 2 - 50,  # centered horizontally
                 pyxel.height // 2,  # centered vertically
                 "Left Mouse Click to Launch!",
-                pyxel.COLOR_BLACK,
+                pyxel.COLOR_RED,
                 None
             )
-        self._draw_game_elements()  # draws the paddle, ball, and bricks
+        
         
     def _draw_running_state(self) -> None:
         """ Draws the RUNNING state """
@@ -359,6 +414,8 @@ class BreakoutGame:
         # "GAME OVER" text
         pyxel.blt(x=139, y=80, img=0, u=48, v=32, w=176, h=16, colkey=pyxel.COLOR_LIGHT_BLUE, scale=2)
         pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
+        # display score
+        pyxel.text(x=208, y=120,s=f"Score: {self.stats.score}", col=pyxel.COLOR_BLACK, font=None)
     
     def _draw_win_state(self) -> None:
         """ Draws the WIN state """
@@ -366,12 +423,17 @@ class BreakoutGame:
         pyxel.blt(x=168, y=80, img=0, u=48, v=48, w=136, h=16, colkey=pyxel.COLOR_LIGHT_BLUE, scale=2)
         pyxel.text(x=175, y=130, s="Press Enter to Play Again.", col=pyxel.COLOR_BLACK, font=None)
         # display final score
+        pyxel.text(x=208, y=120,s=f"Score: {self.stats.score}", col=pyxel.COLOR_BLACK, font=None)
         
     def _draw_game_elements(self) -> None:
         """ Draws the paddle, ball, and bricks """
         self.paddle.draw()
         for brick in self.bricks:
             brick.draw()
+        
+        for r in self.score_objects:
+            r.draw()
+        
         self.ball.draw()
     
     def _draw_ui(self) -> None:
