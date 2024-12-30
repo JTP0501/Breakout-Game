@@ -10,6 +10,7 @@ from reward import Reward
 from ball import Ball
 from paddle import Paddle 
 from brick import Brick
+from sounds import Sounds
 
 
 class GameState(Enum):
@@ -51,21 +52,22 @@ class BreakoutGame:
         self.score_objects: list[Reward] = [] # tracks the list of score objects currently at play
 
         self.current_game_state: GameState # game state tracker
-        self._start_new_game() # starts a new game
+        self.sound: Sounds = Sounds()
         self.dropped_timer: float = 0  # timer for DROPPED state
         self.transition_timer: float = 0 # time for STAGE_TRANSITION state
-
+        self._start_new_game() # starts a new game
+        
         # dropped state prompts
         self.calcifer_sprites: list[tuple[int, int]] = [(48,64), (88, 64)]
         self.chosen_skin: tuple[int, int]
-        self.dropped_msgs: list[str] = ["Don't do that again, unless you want to feel my wrath. >:<",
+        self.dropped_msgs: list[str] = ["Don't do that again, unless you want to feel my wrath. (T-T)",
                                         "I am an extremely powerful fire demon, I won't let you humiliate me.",
                                         "Please, don't drop me again.",
                                         "What are you doing?!?!?",
-                                        ]
+                                        ] 
         self.chosen_msg: str
         pyxel.run(self._update, self._draw) # runs game loop
-
+  
     @classmethod
     def _init_pyxel(cls) -> None:
         """ Initializes Pyxel engine settings """
@@ -93,10 +95,11 @@ class BreakoutGame:
 
     def _next_stage(self) -> None:
         """ Move to the next stage."""
+
         if self.current_stage < len(self.stages):
             self.current_stage += 1
+            self.transition_timer = pyxel.frame_count  # initializes the transition timer (snapshot of frame count)
             self.current_game_state = GameState.STAGE_TRANSITION
-            self.transition_timer = pyxel.frame_count  # initializes the transition timer
         else:
             self.current_game_state = GameState.WIN
 
@@ -104,13 +107,19 @@ class BreakoutGame:
 
     def _start_new_game(self) -> None:
         """ Starts a new game """
+        pyxel.stop(ch=1) # mute channel 1 sounds that is/are still playing
         self.stats = GameStats() # initializes a GameStats object for new game
         self.score_objects.clear() # reset score objects tracker
+        self.bricks.clear() # resets old bricks (if there are any)
         self.current_stage = 1 # sets the current stage to the first one (1-indexed)
+        self.transition_timer = 0  # resets the stage transition timer
         self._load_stage(self.current_stage - 1) # loads the current stage
         self._reset_ball() # resets ball position to paddle
         self.current_game_state = GameState.START # sets the gamestate to the START state
+        self.sound.game_over_played = False # reset game over sound
+        self.sound.win_played = False # reset win sound
         pyxel.mouse(True) # enable mouse cursor view
+        pyxel.playm(0, loop=True) # plays bgm at start
         
     def _reset_ball(self):
         """ Resets the ball to paddle """
@@ -138,24 +147,28 @@ class BreakoutGame:
     def _check_collision(self) -> None:
         """ Checks for all kinds of collisions """
         # Ball vs Paddle
-        self.ball.detect_collision(self.paddle, is_paddle=True)
+        paddle_collision = self.ball.detect_collision(self.paddle, is_paddle=True)
+        if paddle_collision:
+            self.sound.play_ball_hit_sound()
         
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))): # checks all bricks for collisions
             b: Brick = self.bricks[i]
             brick_collision = self.ball.detect_collision(b)
             if brick_collision:
+                self.sound.play_ball_hit_sound()
                 if b.hit():
                     # spawn K score objects
                     self._spawn_score_objects(pyxel.rndi(2,5), b)
                     del self.bricks[i] # removes brick that collides with ball and has no health
                 break
    
-        # Reward vs World (Paddle and Bot)
+        # Reward vs World (Paddle and Bottom)
         for i in reversed(range(len(self.score_objects))):
             r = self.score_objects[i]
             reward_collision: tuple[bool, int] = r.collides(self.paddle)
             if reward_collision[0]:
+                self.sound.play_reward_sound()
                 self.stats.score += reward_collision[1]
                 del self.score_objects[i]
     
@@ -163,16 +176,19 @@ class BreakoutGame:
         """ Checks for inputs by user (depending on the game state)"""
         if self.current_game_state == GameState.READY:
             if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT) or pyxel.btnp(pyxel.KEY_SPACE):
+                self.sound.play_launch_sound()
                 self._launch_ball() # launches the ball
     
         if self.current_game_state in {GameState.GAME_OVER, GameState.WIN}:
             if pyxel.btnp(pyxel.KEY_RETURN): # press enter to start a new game
                 self._start_new_game()
+                pyxel.playm(0, loop=True)  # restarts background music
 
     def _spawn_score_objects(self, K: int, brick: Brick) -> None:
         """ Spawns K rectangular score objects within the bounds of a hit brick without overlap """
+
         # brick properties
-        brick_x, brick_y = brick.x, brick.y  # Top-left corner of the brick
+        brick_x, brick_y = brick.x, brick.y  # top-left corner of the brick
         brick_width, brick_height = brick.w, brick.h
 
         # score object properties
@@ -181,15 +197,24 @@ class BreakoutGame:
         padding = 2  # minimal padding between objects
 
         # determines maximum rows and columns of score objects within the brick
-        max_cols = (brick_width + padding) // (obj_width + padding)
-        max_rows = (brick_height + padding) // (obj_height + padding)
+        max_cols = max((brick_width + padding) // (obj_width + padding), 1)
+        max_rows = max((brick_height + padding) // (obj_height + padding), 1)
         total_positions = int(max_cols * max_rows)  # total available slots
 
+        if total_positions < 2: # at least 2 K
+            max_cols = 2
+            total_positions = 2
+
         # generates and places score objects
-        for i in range(K):
-            row, col = divmod(i % total_positions, max_cols)  # Reuse positions if K > total_positions
+        for i in range(max(K,2)):
+            row, col = divmod(i % total_positions, max_cols)  # reuses positions if K > total_positions
             spawn_x = brick_x + col * (obj_width + padding)
             spawn_y = brick_y + row * (obj_height + padding)
+
+            if spawn_x + obj_width > brick_x + brick_width:
+                spawn_x = brick_x + brick_width - obj_width  # adjusts to fit within the brick's right edge
+            if spawn_y + obj_height > brick_y + brick_height:
+                spawn_y = brick_y + brick_height - obj_height  # adjusts to fit within the brick's bottom edge
 
             if isinstance(self.current_P, int):
                 self.score_objects.append(
@@ -209,14 +234,16 @@ class BreakoutGame:
         if pyxel.btnp(pyxel.MOUSE_BUTTON_LEFT):  # Mouse click to start
             mouse_x, mouse_y = pyxel.mouse_x, pyxel.mouse_y
 
-            # checks if the mouse is within the Play button area
+            # checks if the mouse is within the Play button areas
             button_x, button_y = pyxel.width // 2 - 30, pyxel.height // 2 + 50
             button_width, button_height = 60, 15
 
             if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
                 pyxel.mouse(False) # disable mouse cursor view
+                self.transition_timer = pyxel.frame_count # snapshot of curr frame count
                 self.current_game_state = GameState.STAGE_TRANSITION
-
+                self.sound.play_clicked_button_sound()
+                
     def _update_ready_state(self) -> None:
         """ Update logic for READY state """
         self.ball.x = self.paddle.x + self.paddle.w / 2 - self.ball.r # centers the ball at the paddle's horizontal center
@@ -241,32 +268,32 @@ class BreakoutGame:
             if not self.score_objects: # if there are not score objects in the screen
                 if self.current_stage == len(self.stages): # last stage cleared
                     self.current_game_state = GameState.WIN
+                    pyxel.stop()  # stops background music
                 else:
                     self._next_stage()
 
         if self.ball.out_of_bounds: # if ball dropped
             self.chosen_skin = choice(self.calcifer_sprites) # choose a sprite for the dropped screen
             self.chosen_msg = choice(self.dropped_msgs) # choose a msg for the dropped
-            self.current_game_state = GameState.DROPPED
-    
+            self.stats.lives -= 1
+            if self.stats.lives > 0:
+                self.current_game_state = GameState.DROPPED
+            else:
+                self.current_game_state = GameState.GAME_OVER
+                pyxel.stop()  # stops background music
+                 
     def _update_dropped_state(self) -> None:
         """ Updates logic for DROPPED state """
-        # checks if there are lives remaining
-        if self.stats.lives > 1:
-            # shows DROPPED screen and resets the ball after a delay
-            if self.dropped_timer == 0:
-                self.dropped_timer = pyxel.frame_count  # initializes the timer
-                
-            # waits for 120 frames (2 seconds at 60 FPS)
-            if pyxel.frame_count - self.dropped_timer > 120:
-                self.dropped_timer = 0  # resets the timer
-                self.stats.lives -= 1
-                self._reset_ball()  # resets the ball position
-                self.current_game_state = GameState.READY
-        else:
-            # transitions directly to GAME_OVER if no lives remain
-            self.stats.lives = 0  # Ensures lives don't go negative
-            self.current_game_state = GameState.GAME_OVER
+        
+        # shows DROPPED screen and resets the ball after a delay
+        if self.dropped_timer == 0:
+            self.dropped_timer = pyxel.frame_count  # initializes the timer
+
+        # waits for 120 frames (2 seconds at 60 FPS)
+        if pyxel.frame_count - self.dropped_timer > 120:
+            self.dropped_timer = 0  # resets the timer
+            self._reset_ball()  # resets the ball position
+            self.current_game_state = GameState.READY
 
     def _update_stage_transition_state(self) -> None:
         """ Update logic for STAGE_TRANSITION state """
@@ -278,6 +305,7 @@ class BreakoutGame:
 
     def _update(self) -> None:
         """ General update method """
+
         self._check_input()
         self.paddle.update()
 
@@ -293,9 +321,9 @@ class BreakoutGame:
             case GameState.STAGE_TRANSITION:
                 self._update_stage_transition_state()
             case GameState.GAME_OVER:
-                pass # to be added
+                self.sound.play_game_over_sound()
             case GameState.WIN:
-                pass # to be added 
+                self.sound.play_win_sound()
 
 # +++++++++++++++++++++++++++++++++ DRAW METHODS +++++++++++++++++++++++++++++++++
     def _draw_start_state(self) -> None:
@@ -375,7 +403,11 @@ class BreakoutGame:
     def _draw_dropped_state(self):
         """Draws the DROPPED state screen."""
         pyxel.cls(pyxel.COLOR_LIGHT_BLUE)  # background
-        
+
+        # ensures the sound plays once when the dropped screen is first drawn
+        if self.dropped_timer == 0:  # only plays sound the first frame it starts drawing
+            self.sound.play_dropped_sound()  # plays the dropped sound
+
         # draw calcifer mad/sad
         pyxel.blt(
             x=210,
@@ -396,15 +428,17 @@ class BreakoutGame:
             col=pyxel.COLOR_BLACK,
             font=None
         )
+
+
     def _draw_stage_transition_state(self) -> None:
         """ Draws elements for STAGE_TRANSITION state """
-        pyxel.cls(pyxel.COLOR_LIGHT_BLUE)  # background
+        pyxel.cls(pyxel.COLOR_BLACK)  # background
         message = f"Stage {self.current_stage}"
         pyxel.text(
             pyxel.width // 2 - len(message) * 2.5,  # center horizontally
             pyxel.height // 2 - 4,  # center vertically
             message,
-            pyxel.COLOR_BLACK,
+            pyxel.COLOR_WHITE,
             None
         )
 
