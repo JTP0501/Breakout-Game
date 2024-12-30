@@ -159,7 +159,7 @@ class BreakoutGame:
                 self.sound.play_ball_hit_sound()
                 if b.hit():
                     # spawn K score objects
-                    self._spawn_score_objects(pyxel.rndi(2,5), b)
+                    self._spawn_score_objects(b.K, b)
                     del self.bricks[i] # removes brick that collides with ball and has no health
                 break
    
@@ -185,38 +185,30 @@ class BreakoutGame:
                 pyxel.playm(0, loop=True)  # restarts background music
 
     def _spawn_score_objects(self, K: int, brick: Brick) -> None:
-        """ Spawns K rectangular score objects within the bounds of a hit brick without overlap """
-
+        """ Spawns K rectangular score objects within the bounds of a hit brick """
+        
         # brick properties
         brick_x, brick_y = brick.x, brick.y  # top-left corner of the brick
-        brick_width, brick_height = brick.w, brick.h
 
         # score object properties
         obj_width = 8  # fixed width
         obj_height = 10  # fixed height
-        padding = 2  # minimal padding between objects
+        padding = 2 # space between objects
 
-        # determines maximum rows and columns of score objects within the brick
-        max_cols = max((brick_width + padding) // (obj_width + padding), 1)
-        max_rows = max((brick_height + padding) // (obj_height + padding), 1)
-        total_positions = int(max_cols * max_rows)  # total available slots
+        # defines positions for up to 4 objects (manual layout)
+        positions = [
+        (brick_x + padding, brick_y + padding),  # 1st
+        (brick_x + obj_width + padding, brick_y + padding),  # 2nd
+        (brick_x + padding, brick_y + 2 * obj_height + padding),  # 3rd
+        (brick_x + obj_width + padding, brick_y + 2 * obj_height + padding)  # 4th
+        ]
 
-        if total_positions < 2: # at least 2 K
-            max_cols = 2
-            total_positions = 2
+        # spawns K objects
+        for i in range(K):
+            spawn_x, spawn_y = positions[i]  # uses predefined positions directly
 
-        # generates and places score objects
-        for i in range(max(K,2)):
-            row, col = divmod(i % total_positions, max_cols)  # reuses positions if K > total_positions
-            spawn_x = brick_x + col * (obj_width + padding)
-            spawn_y = brick_y + row * (obj_height + padding)
-
-            if spawn_x + obj_width > brick_x + brick_width:
-                spawn_x = brick_x + brick_width - obj_width  # adjusts to fit within the brick's right edge
-            if spawn_y + obj_height > brick_y + brick_height:
-                spawn_y = brick_y + brick_height - obj_height  # adjusts to fit within the brick's bottom edge
-
-            if isinstance(self.current_P, int):
+            # appends reward object
+            if isinstance(self.current_P, int):    
                 self.score_objects.append(
                     Reward(
                         x=spawn_x,
@@ -428,7 +420,6 @@ class BreakoutGame:
             col=pyxel.COLOR_BLACK,
             font=None
         )
-
 
     def _draw_stage_transition_state(self) -> None:
         """ Draws elements for STAGE_TRANSITION state """
