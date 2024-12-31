@@ -11,18 +11,18 @@
         - [x] 3 - Eggs (Very Sturdy)
         - [x] 4 - Stone Slabs (Indestructible)
         - [ ] 5 - Ball Maker (??)
-    - [] Backgrounds (for the 4 stages, and start)
-    - [] Start Screen
-    - [] Game Over Screen
-    - [] Win Screen
+    - [ ] Background # same background
+    - [x] Start Screen
+    - [x] Game Over Screen
+    - [x] Win Screen
 - [x] Revised Collision Logic Fitting the Guidelines
 - [ ] Stages (4)
-    - Stage 1
-    - Stage 2
-    - Stage 3
-    - Stage 4
+    - [x] Stage 1
+    - [x] Stage 2
+    - [ ] Stage 3
+    - [ ] Stage 4
 
-- [ ] Revised Scoring System (Dropping Score Objects)
+- [x] Revised Scoring System (Dropping Score Objects)
 - [ ] Power Ups
 - [ ] Add ballmaker brick type
 - [ ] Streak
