@@ -29,6 +29,7 @@ class GameStats:
     lives: int = 3 # lives tracker
 
 class BreakoutGame:
+
     def __init__(self) -> None:
         """ Constructor """
 
@@ -45,9 +46,9 @@ class BreakoutGame:
         self.ball: Ball = Ball(self.gravity) # initializes a ball 
         self._reset_ball() # makes sure that ball starts at paddle 
 
-        self.stages: list[dict[str, list[dict[str, int]]]] = self._load_stages("../assets/stages.json") # contains all the predefined stages
+        self.P, self.stages = self._load_stages("../assets/stages.json") # contains all the predefined stages
         self.current_stage: int # tracks the current stage no. 
-        self.current_P: int | list[dict[str, int]] = 2 # tracks the current "P" value for bricks (for now arbitrary 2)
+        
         self.bricks: list[Brick] = [] # tracks the list of bricks imported from the current stage
         self.score_objects: list[Reward] = [] # tracks the list of score objects currently at play
 
@@ -64,7 +65,7 @@ class BreakoutGame:
                                         "I am an extremely powerful fire demon, I won't let you humiliate me.",
                                         "Please, don't drop me again.",
                                         "What are you doing?!?!?",
-                                        ] 
+                                        ]
         self.chosen_msg: str
         pyxel.run(self._update, self._draw) # runs game loop
   
@@ -77,11 +78,11 @@ class BreakoutGame:
     # +++++++++++++++++++++++++++++++++ STAGE MANAGEMENT +++++++++++++++++++++++++++++++++
 
     @classmethod
-    def _load_stages(cls, file_path: str) -> list[dict[str, list[dict[str, int]]]]:
+    def _load_stages(cls, file_path: str) -> tuple[int, list[dict[str, list[dict[str, int]]]]]:
         """ Load stages from JSON file."""
         with open(file_path, "r") as f:
             data = json.load(f)
-        return data["stages"]
+        return data["P"], data["stages"]
 
     def _load_stage(self, stage_index: int) -> None:
         """ Load a specific stage."""
@@ -91,11 +92,9 @@ class BreakoutGame:
             Brick(brick["x"], brick["y"], brick["brick_type"], K=pyxel.rndi(2,4)) # random K from 2 to 4
             for brick in stage["bricks"]
         ]
-        self.current_P = stage.get("P", 0)
 
     def _next_stage(self) -> None:
         """ Move to the next stage."""
-
         if self.current_stage < len(self.stages):
             self.current_stage += 1
             self.transition_timer = pyxel.frame_count  # initializes the transition timer (snapshot of frame count)
@@ -147,29 +146,33 @@ class BreakoutGame:
     def _check_collision(self) -> None:
         """ Checks for all kinds of collisions """
         # Ball vs Paddle
-        paddle_collision = self.ball.detect_collision(self.paddle, is_paddle=True)
+        paddle_collision = self.ball.detect_collision(self.paddle)
         if paddle_collision:
             self.sound.play_ball_hit_sound()
-        
+
         # Ball vs Bricks
         for i in reversed(range(len(self.bricks))): # checks all bricks for collisions
             b: Brick = self.bricks[i]
+
             brick_collision = self.ball.detect_collision(b)
             if brick_collision:
                 self.sound.play_ball_hit_sound()
-                if b.hit():
-                    # spawn K score objects
-                    self._spawn_score_objects(b.K, b)
+                
+                if self.ball.destroy_brick:
                     del self.bricks[i] # removes brick that collides with ball and has no health
+                    # spawns K score objects
+                    self._spawn_score_objects(b.K, b)
+                    self.ball.destroy_brick = False # resets it
                 break
    
         # Reward vs World (Paddle and Bottom)
         for i in reversed(range(len(self.score_objects))):
             r = self.score_objects[i]
-            reward_collision: tuple[bool, int] = r.collides(self.paddle)
-            if reward_collision[0]:
-                self.sound.play_reward_sound()
-                self.stats.score += reward_collision[1]
+            collision_type, points = r.collides(self.paddle)
+            if collision_type is not None: # if it collides
+                if collision_type == "paddle":
+                    self.sound.play_reward_sound()
+                self.stats.score += points
                 del self.score_objects[i]
     
     def _check_input(self) -> None:
@@ -207,16 +210,15 @@ class BreakoutGame:
         for i in range(K):
             spawn_x, spawn_y = positions[i]  # uses predefined positions directly
 
-            # appends reward object
-            if isinstance(self.current_P, int):    
-                self.score_objects.append(
-                    Reward(
-                        x=spawn_x,
-                        y=spawn_y,
-                        points=self.current_P,
-                        falling_accel=self.gravity
-                    )
+            # appends reward object  
+            self.score_objects.append(
+                Reward(
+                    x=spawn_x,
+                    y=spawn_y,
+                    points=self.P,
+                    falling_accel=self.gravity
                 )
+            )
 
 # +++++++++++++++++++++++++++++++++ UPDATE METHODS +++++++++++++++++++++++++++++++++
 
@@ -297,7 +299,6 @@ class BreakoutGame:
 
     def _update(self) -> None:
         """ General update method """
-
         self._check_input()
         self.paddle.update()
 
@@ -322,7 +323,6 @@ class BreakoutGame:
         """ Draw elements for START state """
         
         # game title
-        
         pyxel.blt(
             x=140,
             y=45,
@@ -382,10 +382,9 @@ class BreakoutGame:
                 pyxel.width // 2 - 50,  # centered horizontally
                 pyxel.height // 2,  # centered vertically
                 "Left Mouse Click to Launch!",
-                pyxel.COLOR_RED,
+                pyxel.COLOR_WHITE,
                 None
             )
-        
         
     def _draw_running_state(self) -> None:
         """ Draws the RUNNING state """
