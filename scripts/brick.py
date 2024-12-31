@@ -62,17 +62,10 @@ class Brick:
             case _:
                 # shouldn't happen
                 pass
-    
-    def hit(self) -> bool:
-        """ Method for discerning response to being hit """
-        self.health -= 1
-        if self.health > 0:
-            # only two cases, if brick type is 2 or 3
-            if self.brick_type == 2: # 2
-                self.current_skin = self.skins_2[self.health - 1]
-            else: # 3
-                self.current_skin = self.skins_3[self.health - 1]
-        return self.health == 0 # True if it should be deleted
+
+    def destroy(self) -> bool:
+        """ Conveys message to destroy brick -> ball -> game """
+        return True
 
     def draw(self) -> None:
         """ Drawing method for brick """
