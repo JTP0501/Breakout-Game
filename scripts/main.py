@@ -798,6 +798,8 @@ class BreakoutGame:
         """ Draws the paddle, ball/s, and bricks """
         # checks if game state is RUNNING state
         if self.current_game_state == GameState.RUNNING:
+                                                                # draws paddle speed when game is in RUNNING
+            pyxel.text(x=10,y=pyxel.height - 10, s=f"Paddle Speed: {"%.2f" % self.paddle.speed}", col=pyxel.COLOR_BLACK, font=None) 
                                                                 # draws streak
             self._draw_streak()
 
