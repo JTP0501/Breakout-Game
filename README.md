@@ -3,7 +3,7 @@ CS 12 Project
 
 # Stages Configuration File
 
-The `stages.json` file is used to configure the stages in the game. Each stage is defined by their P (type: int) its "weight" contribution to score, and a list of bricks (type: list[dict[str, int]]).
+The `stages.json` file is used to configure the stages in the game. Each game has global values P (type: int) its "weight" contribution to score, G (type: int) duration of powerups, X (type: int) percent chance of powerup drop, Q (type: int) streak increment, and each stage is defined by a list of bricks (type: list[dict[str, int]]).
 
 ## Format
 
