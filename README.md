@@ -17,19 +17,21 @@ The `stages.json` file is used to configure the stages in the game.
 
 ```json
 {
-  "P" : <int>,
-  "G" : <int>,
-  "X" : <int>,
-  "Q" : <int>,           
+  "P" : `<int>`,
+  "G" : `<int>`,
+  "X" : `<int>`,
+  "Q" : `<int>`,           
   "stages": [
     {
       "bricks": [           
-        {"x": <int>, "y": <int>, "brick_type": <int>}
+        {"x": `<int>`, "y": `<int>`, "brick_type": `<int>`}
       ]
     }
   ]
 }
+```
 
+`brick_type` = 1 (Regular), 2 (Sturdy), 3 (Very Sturdy), 4 (Indestructible), or 5 (Ballmaker)
 
 Disclaimer:
 This project is a part of a school assignment and is intended for educational purposes only. It is not a professional product and may contain limitations or inaccuracies. Any external content used in this project has been credited accordingly, and no copyright infringement is intended.
