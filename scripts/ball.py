@@ -113,7 +113,7 @@ class Ball:
         self.speed_y: float
         self.gravity: float = gravity
         self.VELOCITY_INCREASE: float = 0.25                # constants
-        self.MAX_SPEED: float = 2.5
+        self.MAX_SPEED: float = 2.90
         self.r: int = 4 
         
         # ball trail
