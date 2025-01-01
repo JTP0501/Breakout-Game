@@ -8,28 +8,35 @@ BrickType: dict[int, dict[str, int]] = {
         "w": 32,
         "h": 16,
         "health": 1,
-        "colkey": 6,
+        "colkey": pyxel.COLOR_LIGHT_BLUE,
     },
     2: { # bacon (sturdy)
         "img": 0,
         "w": 32,
         "h": 16,
         "health": 2,
-        "colkey": 6,
+        "colkey": pyxel.COLOR_LIGHT_BLUE,
     },
     3: { # eggs (very sturdy)
         "img": 0,
         "w": 16,
         "h": 16,
         "health": 3,
-        "colkey": 8,
+        "colkey": pyxel.COLOR_RED,
     },
     4: { # stone slabs (indestructible)
         "img": 0,
         "w": 32,
         "h": 16,
         "health": -1, # meaning it can't be broken
-        "colkey": 6,
+        "colkey": pyxel.COLOR_LIGHT_BLUE,
+    },
+    5: { # ball maker
+        "img": 0,
+        "w": 32,
+        "h": 16,
+        "health": 1,
+        "colkey": pyxel.COLOR_LIGHT_BLUE
     }
 }
 
@@ -46,19 +53,22 @@ class Brick:
         self.colkey = BrickType[brick_type]["colkey"]
         self.skins_1 = [(16,0), (16,16), (16,32), (16,48), (16,64), (16,80)] # brick type 1
         self.skins_2 = [(16, 112), (16,96)] # brick type 2 (arranged in reverse)
-        self.skins_3 = [(0, 64), (0,48), (0, 32)] # brick type 3
+        self.skins_3 = [(0, 64), (0,48), (0, 32)] # brick type 3 (arranged in reverse)
         self.skins_4 = [(48, 0), (48, 16)] # brick type 4
-        self.current_skin: tuple[int, int]
+        self.current_skin: tuple[int, int] # (u, v)
         self.K = K
+
         match brick_type:
             case 1:
                 self.current_skin = choice(self.skins_1)
             case 2:
-                self.current_skin = self.skins_2[self.health - 1] # use the first stage of brick type 2
+                self.current_skin = self.skins_2[self.health - 1] # uses the first stage of brick type 2
             case 3:
-                self.current_skin = self.skins_3[self.health - 1] # use the first stage of brick type 3
+                self.current_skin = self.skins_3[self.health - 1] # uses the first stage of brick type 3
             case 4:
                 self.current_skin = choice(self.skins_4) # random choice
+            case 5:
+                self.current_skin = 48, 112 # (u, v)
             case _:
                 # shouldn't happen
                 pass
