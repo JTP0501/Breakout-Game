@@ -66,6 +66,11 @@ class BreakoutGame:
                                         "What are you doing?!?!?",
                                         ]
         self.chosen_msg: str
+
+        # streak
+        self.streak_count: int = 0
+        self.streak_timer: int = 0
+
         pyxel.run(self._update, self._draw) # runs game loop
   
     @classmethod
@@ -97,6 +102,8 @@ class BreakoutGame:
         if self.current_stage < len(self.stages):
             self.current_stage += 1
             self.transition_timer = pyxel.frame_count  # initializes the transition timer (snapshot of frame count)
+            self.streak_count = 0 # resets streak after each stage cleared
+            self.streak_timer = 0 
             self.current_game_state = GameState.STAGE_TRANSITION
         else:
             self.current_game_state = GameState.WIN
@@ -193,13 +200,23 @@ class BreakoutGame:
             if collision_type is not None: # if it collides
                 if collision_type == "paddle":
                     self.sound.play_reward_sound()
+                    self.streak_count += 1
+                    self.streak_timer = 60  # displays streak message for 1 second (60 frames)
+
+                    # calculates added points with streak multiplier
+                    streak_bonus = (self.streak_count - 1) * self.Q  # adds Q for each streak level
+                    added_points = points + streak_bonus
+                    
                     if r.powerup_type: # if it is a powerup
                         self._apply_powerup(r.powerup_type)
-                    if hasattr(self, "double_points") and self.double_points:
-                        self.stats.score += (2 * points) # doubles the points of objects collided with
-                    else:
-                        self.stats.score += points 
+                    if hasattr(self, "double_points_timer") and self.double_points: # checks if the timer is there and double points is set to True
+                        added_points *= 2 # doubles the points of objects collided with (including the added bonus)
+                    self.stats.score += added_points
+                else:
+                    self.streak_count = 0  # resets streak
+                    self.streak_timer = 0  # clears streak display
                 del self.score_objects[i]
+                
     
     def _check_input(self) -> None:
         """ Checks for inputs by user (depending on the game state)"""
@@ -297,6 +314,8 @@ class BreakoutGame:
     
     def _update_running_state(self) -> None:
         """ Update logic for RUNNING state """
+        if self.streak_timer > 0:
+            self.streak_timer -= 1
 
         self._update_timers()
 
@@ -579,9 +598,13 @@ class BreakoutGame:
 
     def _draw_game_elements(self) -> None:
         """ Draws the paddle, ball, and bricks """
-        # draws powerup timers (if applicable)
-        self._draw_powerup_timers()
-        
+        if self.current_game_state == GameState.RUNNING:
+            # draws streak
+            self._draw_streak()
+
+            # draws powerup timers (if applicable)
+            self._draw_powerup_timers()
+            
         # draws paddle
         self.paddle.draw()
         
@@ -632,7 +655,20 @@ class BreakoutGame:
             h=112,
             scale=2.005
         )
-        
+    
+    def _draw_streak(self) -> None:
+        """ Draws impact of each score object received """
+        points: int = self.P + ((self.streak_count - 1) * self.Q)
+        if hasattr(self, "double_points_timer"):
+            points *= 2
+        if self.streak_count > 1 and self.streak_timer > 0:
+            pyxel.text(
+                x=10, y=40,  # Position
+                s=f"Streak: {self.streak_count} (+{points})",
+                col=pyxel.COLOR_ORANGE,
+                font=None
+            )
+
     def _draw(self) -> None:
         """ General drawing method """
         
