@@ -1,6 +1,6 @@
 # Breakout Game
 - This is a todo-list
-- [ ] Polishing and Documentation
+
 
 ### Completed Column ✓
 - [x] Concept Finalization (Ghibli Theme)
@@ -33,3 +33,4 @@
 - [x] Add ballmaker brick type
 - [x] Making the power ups timer pause when ball/s dropped
 - [x] Streak
+- [x] Polishing and Documentation
