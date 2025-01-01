@@ -7,12 +7,11 @@ class Paddle:
         self.w: float = 72  # width of the paddle (based on sprite)
         self.h: float = 14   # height of the paddle (based on sprite)
         self.x: float = pyxel.width // 2 - self.w // 2  # starts in the middle of the screen
-        self.y: float = pyxel.height - 40  # positions it near the bottom
+        self.y: float = pyxel.height - 30  # positions it near the bottom
         self.sprite_img : int = 1  # The img bank where the paddle is located
         self.sprite_u : int = 0 # the (u,v) of the paddle in the img (u=0, v=7)    
         self.sprite_v: int = 2
-        self.speed: float = 3.75 # speed of paddle 
-        self.score: int = 0       # this is just for pyright (not used here)
+        self.speed: float = 2.5 # speed of paddle 
 
         self.mark_w: int = 12
         self.mark_h: int = 16
