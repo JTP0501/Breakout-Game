@@ -1,5 +1,5 @@
 # CALCIFER'S-COOKOUT
-<b>CS 12 Project<\b> 
+<b>CS 12 Project
 
 Welcome to "Calcifer's Cookout"! This README explains how the stages are configurated in the `stages.json` file, contains an `installation guide`, and a description of the features found in this modified breakout game inspired by Studio Ghibli's "Howl's Moving Castle".
 
@@ -32,15 +32,15 @@ The `stages.json` file is used to configure the stages in the game.
 ```
 
 `brick_type`
-- 1 ...................... (Regular)
-- 2 ...................... (Sturdy)
-- 3 ...................... (Very Sturdy)
-- 4 ...................... (Indestructible)
-- 5 ...................... (Ballmaker)
+- <b>1       (Regular)
+- <b>2       (Sturdy)
+- <b>3       (Very Sturdy)
+- <b>4       (Indestructible)
+- <b>5       (Ball Maker)
 
 ## Built With
 
 `Pyxel` - A retro game engine for Python.
 
-Disclaimer:
+<b>Disclaimer:
 This project is a part of a school assignment and is intended for educational purposes only. It is not a professional product and may contain limitations or inaccuracies. Any external content used in this project has been credited accordingly, and no copyright infringement is intended.
