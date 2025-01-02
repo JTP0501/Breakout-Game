@@ -236,7 +236,7 @@ class BreakoutGame:
         self.score_objects: list[Reward] = []                   # tracks the list of score objects currently at play
 
         # relates to stage management
-        self.P, self.G, self.X, self.Q, self.stages = self._load_stages("../assets/stages.json")
+        self.P, self.G, self.X, self.Q, self.stages = self._load_stages("../src/stages.json")
         self.g = self.G * 60                                    # redefines G (60 fps)
         self.current_stage: int                                 # tracks the current stage no. 
         
@@ -268,7 +268,7 @@ class BreakoutGame:
         """ Initializes Pyxel engine settings """
 
         pyxel.init(width=450, height=200, display_scale=3, title="Breakout Game", fps=60)
-        pyxel.load(filename="../assets/resources.pyxres")                # our resource file
+        pyxel.load(filename="../src/resources.pyxres")                # our resource file
 
     # +++++++++++++++++++++++++++++++++ STAGE MANAGEMENT +++++++++++++++++++++++++++++++++
 
