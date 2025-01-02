@@ -9,8 +9,8 @@ Date: January 01, 2025
 """
 
 import pyxel
-from paddle import Paddle
-from brick import Brick
+from src.paddle import Paddle
+from src.brick import Brick
 from math import ceil, radians, cos, sin
 from random import choice
 
