@@ -6,7 +6,7 @@ Welcome to "Calcifer's Cookout"! This README explains how the stages are configu
 # Stages Configuration File
 
 The `stages.json` file is used to configure the stages in the game.
-## Global Values
+### Global Values
 
 - `P` (Points Contribution)
 - `G` (Power-Up Duration)
@@ -17,28 +17,25 @@ The `stages.json` file is used to configure the stages in the game.
 
 ```json
 {
-  "P" : `<int>`,
-  "G" : `<int>`,
-  "X" : `<int>`,
-  "Q" : `<int>`,           
+  "P" : <int>,                                  
+  "G" : <int>,                                  
+  "X" : <int>,
+  "Q" : <int>,           
   "stages": [
     {
       "bricks": [           
-        {"x": `<int>`, "y": `<int>`, "brick_type": `<int>`}
-      ]
-    }
-  ]
-}
+        {
+            "x": <int>,                          // x-pos of brick
+            "y": <int>,                          // y-pos of brick
+            "brick_type": <int>                  // type of brick
+        }                                        // 1 - Regular (book)
+      ]                                          // 2 - Sturdy (bacon)
+    }                                            // 3 - Very Sturdy (egg)
+  ]                                              // 4 - Indestructible (stone slab)
+}                                                // 5 - Ball Maker (wood)
 ```
 
-`brick_type`
-- <b>1       (Regular)
-- <b>2       (Sturdy)
-- <b>3       (Very Sturdy)
-- <b>4       (Indestructible)
-- <b>5       (Ball Maker)
-
-## Built With
+### Built With
 
 `Pyxel` - A retro game engine for Python.
 
