@@ -1,5 +1,5 @@
 # CALCIFER'S-COOKOUT
-CS 12 Project 
+<b>CS 12 Project<\b> 
 
 Welcome to "Calcifer's Cookout"! This README explains how the stages are configurated in the `stages.json` file, contains an `installation guide`, and a description of the features found in this modified breakout game inspired by Studio Ghibli's "Howl's Moving Castle".
 
