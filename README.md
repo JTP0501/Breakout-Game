@@ -8,10 +8,13 @@ Help Calcifer go through all the different stages, and feed him with as many lum
 
 ### Game Demo 🎮
 
-![Game Demo 1](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWpwODV3bHJya2Uxb20xZTAyaHlta293MDN4bWI0ZjJ6eWkyZ3h3bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1WYyawSSH1fR7WIddG/giphy.gif)
+_Try playing the game by clicking any of the gifs below!_
 <p>
   <a href="https://kitao.github.io/pyxel/wasm/launcher/?play=JTP0501.Calcifers-Cookout.calcifers-cookout">
-    <img         src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWpwODV3bHJya2Uxb20xZTAyaHlta293MDN4bWI0ZjJ6eWkyZ3h3bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1WYyawSSH1fR7WIddG/giphy.gif" width=500">
+    <img         src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWpwODV3bHJya2Uxb20xZTAyaHlta293MDN4bWI0ZjJ6eWkyZ3h3bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1WYyawSSH1fR7WIddG/giphy.gif" width=200">
+  </a>
+  <a href="https://kitao.github.io/pyxel/wasm/launcher/?play=JTP0501.Calcifers-Cookout.calcifers-cookout">
+    <img         src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2R4bGdxMG9xdTEzbG83d3c3dzFmd3Bsem01ZDFnbjJ2bWo1c28xciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Z7JVJwEmF47ZzK4mN8/giphy.gif" width=200">
   </a>
 </p>
 
