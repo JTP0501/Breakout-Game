@@ -17,10 +17,10 @@ The `stages.json` file is used to configure the stages in the game.
 
 ```json
 {
-  "P" : <int>,                                  
-  "G" : <int>,                                  
+  "P" : <int>,
+  "G" : <int>,
   "X" : <int>,
-  "Q" : <int>,           
+  "Q" : <int>,
   "stages": [
     {
       "bricks": [           
