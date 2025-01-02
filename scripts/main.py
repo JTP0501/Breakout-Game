@@ -17,11 +17,11 @@ from math import radians, sin, cos
 from random import choice
 
                                                                 # all imported modules
-from reward import Reward
-from ball import Ball
-from paddle import Paddle 
-from brick import Brick
-from sounds import Sounds
+from scripts.reward import Reward
+from scripts.ball import Ball
+from scripts.paddle import Paddle 
+from scripts.brick import Brick
+from scripts.sounds import Sounds
 
 class GameState(Enum):
     """ 
