@@ -6,8 +6,11 @@ Welcome to ***"Calcifer's Cookout"***!
 
 Help Calcifer go through all the different stages, and feed him with as many lumps of coal and potions to gain the highest possible score.
 
-## Game Demo 🎮
+### Game Demo 🎮
 
+![Game Demo 1](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWpwODV3bHJya2Uxb20xZTAyaHlta293MDN4bWI0ZjJ6eWkyZ3h3bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1WYyawSSH1fR7WIddG/giphy.gif)
+![Game Demo 2](https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdGE2Z3dyNzFvZ2xnYjJ5anMwb2o0ejYzYWV6MXZvbG5iaXdpdWgxayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Z7JVJwEmF47ZzK4mN8/giphy.gif)
+---
 This README explains how the stages are configurated in the `stages.json` file, and contains a description of some of the features found in this modified breakout game inspired by _Studio Ghibli's "Howl's Moving Castle"_.
 
 # Stages Configuration File ⚙️
