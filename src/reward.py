@@ -10,7 +10,7 @@ Date: January 01, 2025
 """
 
 import pyxel
-from src.paddle import Paddle
+from paddle import Paddle
 from random import choice
 
 
